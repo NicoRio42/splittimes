@@ -22,14 +22,14 @@
 	});
 </script>
 
-<main class="container">
+<figure class="wrapper" on:scroll={console.log}>
 	<table>
 		<thead>
 			<tr>
-				<th>Name</th>
+				<th class="sticky-top sticky-left name-th">Name</th>
 
 				{#each legs as leg}
-					<th>{leg?.finishControlCode}</th>
+					<th class="sticky-top">{leg?.finishControlCode}</th>
 				{/each}
 			</tr>
 		</thead>
@@ -37,7 +37,7 @@
 		<tbody>
 			{#each runners as runner (runner.id)}
 				<tr>
-					<td>{runner.lastName}</td>
+					<td class="sticky-left">{runner.lastName}</td>
 
 					{#each runner.legs as runnerLeg}
 						<td>{runnerLeg?.time}</td>
@@ -46,4 +46,31 @@
 			{/each}
 		</tbody>
 	</table>
-</main>
+</figure>
+
+<style>
+	.wrapper {
+		flex-basis: 0;
+		flex-shrink: 0;
+		flex-grow: 1;
+		margin: 0;
+		position: relative;
+	}
+
+	.sticky-top {
+		position: sticky;
+		top: 0;
+		background-color: var(--background-color);
+		z-index: 1;
+	}
+
+	.name-th {
+		z-index: 2;
+	}
+
+	.sticky-left {
+		position: sticky;
+		left: 0;
+		background-color: var(--background-color);
+	}
+</style>
