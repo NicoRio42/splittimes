@@ -4,7 +4,7 @@
 	import type { RunnerLeg } from '../../../../../lib/o-utils/models/runner-leg.js';
 	import type Runner from '../../../../../lib/o-utils/models/runner.js';
 	import { parseIOFXML3SplitTimesFile } from '../../../../../lib/o-utils/split-times/parsers/iof-xml-3.js';
-	import { secondsToPrettyTime } from '$lib/utils.js';
+	import { rankToCSSClass, secondsToPrettyTime } from '$lib/utils.js';
 
 	export let data;
 
@@ -59,44 +59,86 @@
 			{#each runners as runner (runner.id)}
 				<tr>
 					<td class="sticky-left">
-						{#if compact}
-							{runner.firstName?.at(0)}{runner.lastName?.at(0)}
-						{:else}
-							{runner.lastName}
-						{/if}
+						<div class="tooltip-container">
+							{#if compact}
+								{runner.firstName?.at(0)}{runner.lastName?.at(0)}
+							{:else}
+								{runner.lastName}
 
-						<span class="nowrap">
-							{#if runner.time}
-								{secondsToPrettyTime(runner.time)}
+								<div>
+									{#if runner.time}
+										{secondsToPrettyTime(runner.time)}
+									{/if}
+
+									{#if runner.rank}
+										({runner.rank})
+									{/if}
+								</div>
 							{/if}
 
-							{#if runner.rank}
-								({secondsToPrettyTime(runner.rank)})
+							{#if runner.timeBehind || runner.totalTimeLost}
+								<div class="tooltip tooltip-right">
+									<div class="nowrap">
+										+&nbsp;
+
+										{#if runner.timeBehind}
+											{secondsToPrettyTime(runner.timeBehind)}
+										{/if}
+									</div>
+
+									{#if runner.totalTimeLost}
+										{secondsToPrettyTime(runner.totalTimeLost)}
+									{/if}
+								</div>
 							{/if}
-						</span>
+						</div>
 					</td>
 
 					{#each runner.legs as runnerLeg}
-						<td>
-							<span class="nowrap">
-								{#if runnerLeg?.time}
-									{secondsToPrettyTime(runnerLeg.time)}
-								{/if}
+						<td class:mistake={runnerLeg?.isMistake}>
+							{#if runnerLeg}
+								<div class="nowrap tooltip-container {rankToCSSClass(runnerLeg.rankSplit)}">
+									{#if runnerLeg?.time}
+										{secondsToPrettyTime(runnerLeg.time)}
+									{/if}
 
-								{#if runnerLeg?.rankSplit}
-									({secondsToPrettyTime(runnerLeg.rankSplit)})
-								{/if}
-							</span>
+									{#if runnerLeg?.rankSplit}
+										({secondsToPrettyTime(runnerLeg.rankSplit)})
+									{/if}
 
-							<span class="nowrap">
-								{#if runnerLeg?.timeOverall}
-									{secondsToPrettyTime(runnerLeg.timeOverall)}
-								{/if}
+									{#if runnerLeg.timeBehindSplit || runnerLeg.timeLoss}
+										<div class="tooltip">
+											{#if runnerLeg.timeBehindSplit}
+												<div class="nowrap">
+													+&nbsp;{secondsToPrettyTime(runnerLeg.timeBehindSplit)}
+												</div>
+											{/if}
 
-								{#if runnerLeg?.rankOverall}
-									({secondsToPrettyTime(runnerLeg.rankOverall)})
-								{/if}
-							</span>
+											{#if runnerLeg.timeLoss}
+												<div class="nowrap">
+													Time lost:&nbsp;{secondsToPrettyTime(runnerLeg.timeLoss)}
+												</div>
+											{/if}
+										</div>
+									{/if}
+								</div>
+
+								<div class="nowrap tooltip-container {rankToCSSClass(runnerLeg.rankOverall)}">
+									{#if runnerLeg?.timeOverall}
+										{secondsToPrettyTime(runnerLeg.timeOverall)}
+									{/if}
+
+									{#if runnerLeg?.rankOverall}
+										({runnerLeg.rankOverall})
+									{/if}
+
+									{#if runnerLeg.timeBehindOverall}
+										<div class="tooltip">
+											+&nbsp;{secondsToPrettyTime(runnerLeg.timeBehindOverall)}
+										</div>
+									{/if}
+								</div>
+							{/if}
 						</td>
 					{/each}
 				</tr>
@@ -114,7 +156,8 @@
 		position: relative;
 	}
 
-	.sticky-top {
+	.sticky-top,
+	.sticky-left {
 		position: sticky;
 		top: 0;
 		background-color: var(--background-color);
@@ -133,5 +176,54 @@
 
 	.nowrap {
 		white-space: nowrap;
+	}
+
+	.first {
+		color: #f44336;
+	}
+
+	.second {
+		color: #4caf50;
+	}
+
+	.third {
+		color: #2196f3;
+	}
+
+	table tr td.mistake {
+		background-color: #8c3b3b;
+	}
+
+	.tooltip-container {
+		position: relative;
+	}
+
+	.tooltip-container:hover .tooltip,
+	.tooltip-container:active .tooltip {
+		visibility: visible;
+		opacity: 1;
+	}
+
+	.tooltip {
+		z-index: 1;
+		display: inline-block;
+		position: absolute;
+		left: 10%;
+		top: 100%;
+		color: #fff;
+		background-color: #616161;
+		padding-left: 8px;
+		padding-right: 8px;
+		text-align: center;
+		border-radius: 4px;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+
+	.tooltip-right {
+		top: 50%;
+		transform: translateY(-50%);
+		left: calc(100% + 1rem);
 	}
 </style>
