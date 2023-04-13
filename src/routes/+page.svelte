@@ -107,6 +107,14 @@
 </main>
 
 <style>
+	:root {
+		--spacing: 0.5rem;
+	}
+
+	.container {
+		margin-top: 1rem;
+	}
+
 	.form,
 	.search {
 		max-width: 20rem;

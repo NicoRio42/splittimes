@@ -44,13 +44,13 @@
 </script>
 
 <figure class="wrapper" on:scroll={handleScroll}>
-	<table>
+	<table role="grid">
 		<thead>
 			<tr>
 				<th class="sticky-top sticky-left name-th" />
 
 				{#each legs as leg, index}
-					<th class="sticky-top">{index + 1}</th>
+					<th class="sticky-top center">{index + 1}</th>
 				{/each}
 			</tr>
 		</thead>
@@ -63,7 +63,7 @@
 							{#if compact}
 								{runner.firstName?.at(0)}{runner.lastName?.at(0)}
 							{:else}
-								{runner.lastName}
+								{runner.firstName?.at(0)}.{runner.lastName}
 
 								<div>
 									{#if runner.time}
@@ -164,6 +164,10 @@
 		z-index: 1;
 	}
 
+	.center {
+		text-align: center;
+	}
+
 	.name-th {
 		z-index: 2;
 	}
@@ -191,6 +195,20 @@
 	}
 
 	table tr td.mistake {
+		background-color: #dc8a8a;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		table tr td.mistake {
+			background-color: #8c3b3b;
+		}
+	}
+
+	:global(html[data-theme='light']) table tr td.mistake {
+		background-color: #dc8a8a;
+	}
+
+	:global(html[data-theme='dark']) table tr td.mistake {
 		background-color: #8c3b3b;
 	}
 

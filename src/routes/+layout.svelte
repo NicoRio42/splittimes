@@ -32,6 +32,7 @@
 
 	.nav {
 		align-items: center;
+		border-bottom: 0.125rem solid var(--table-border-color);
 	}
 
 	.brand {
