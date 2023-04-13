@@ -4,7 +4,7 @@
 </script>
 
 <div class="wrapper">
-	<nav class="container-fluid">
+	<nav class="container-fluid nav">
 		<ul>
 			<li class="brand">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="brand-logo">
@@ -28,6 +28,10 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+	}
+
+	.nav {
+		align-items: center;
 	}
 
 	.brand {
