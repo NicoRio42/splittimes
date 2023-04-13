@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { Event } from '../lib/models/event.model.js';
 
 	export let data;
+
 	let events: Event[] = [];
 
-	onMount(() => {
+	$: if (browser) {
 		const parser = new DOMParser();
 		const xmlDoc = parser.parseFromString(data.events, 'text/xml');
 		const eventTags = xmlDoc.querySelectorAll('Event');
@@ -26,7 +27,7 @@
 				name
 			};
 		});
-	});
+	}
 </script>
 
 <main class="container">
@@ -34,10 +35,8 @@
 		<label>
 			Date
 
-			<input type="date" name="date" />
+			<input type="date" name="date" value={data.date} onchange="this.form.submit()" />
 		</label>
-
-		<button>Load events</button>
 	</form>
 
 	<ul>
