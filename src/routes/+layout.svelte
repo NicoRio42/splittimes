@@ -1,7 +1,10 @@
 <script lang="ts">
 	import './global.css';
+	import { browser } from '$app/environment';
 
-	let isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+	let isDark = false;
+	if (browser)
+		isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 	function handleThemeSwitch() {
 		window.document.body;
