@@ -32,7 +32,7 @@
 	<table role="grid">
 		<thead>
 			<tr>
-				<th class="sticky-top sticky-left name-th">
+				<th class="sticky-top sticky-left compact-toggle name-th">
 					<button class="compact-button" on:click={() => (compact = !compact)}>
 						{#if compact}
 							<svg class="enlarge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
@@ -216,5 +216,13 @@
 	:global(html[data-theme='light']) .enlarge,
 	:global(html[data-theme='light']) .shrink {
 		color: var(--h1-color);
+	}
+
+	.compact-toggle {
+		z-index: 2;
+	}
+
+	table {
+		margin: 0;
 	}
 </style>
