@@ -15,6 +15,8 @@
 		const xmlDoc = parser.parseFromString(eventsString, 'text/xml');
 		const eventTags = xmlDoc.querySelectorAll('Event');
 
+		console.log(typeof eventsString);
+
 		events = Array.from(eventTags).map((eventTag) => {
 			const idTag = eventTag.querySelector('Id');
 			const nameTag = eventTag.querySelector('Name');

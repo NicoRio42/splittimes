@@ -32,8 +32,14 @@ export function parseIOFXML3SplitTimesFile(
 
 	const personResults = classResult.querySelectorAll('PersonResult');
 	const runners = getRunners(personResults, timeZone, timeOffset);
+	const runnersWithMistakes = computeSplitsRanksMistakes(runners);
 
-	return computeSplitsRanksMistakes(runners);
+	runnersWithMistakes.forEach(
+		(runner) =>
+			(runner.totalTimeLost = runner.legs.reduce((time, leg) => time + (leg?.timeLoss ?? 0), 0))
+	);
+
+	return runnersWithMistakes;
 }
 
 function getRunners(

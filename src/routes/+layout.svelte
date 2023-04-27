@@ -1,9 +1,14 @@
 <script lang="ts">
 	import './global.css';
 	import ThemeSwitch from './components/ThemeSwitch.svelte';
+	import { navigating } from '$app/stores';
 </script>
 
 <div class="wrapper">
+	{#if $navigating !== null}
+		<progress />
+	{/if}
+
 	<nav class="container-fluid nav">
 		<ul>
 			<li class="brand">
@@ -28,6 +33,13 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		position: relative;
+	}
+
+	progress {
+		position: fixed;
+		height: 0.25rem;
+		border-radius: 0;
 	}
 
 	.nav {

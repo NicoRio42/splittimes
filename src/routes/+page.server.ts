@@ -18,5 +18,7 @@ export async function load({ url, fetch }) {
 	const response = await fetch(`${TWO_D_RERUN_URL}?date=${date}`);
 	const events = await response.text();
 
+	console.log('EVENTS', typeof events, `${TWO_D_RERUN_URL}?date=${date}`);
+
 	return { events, date };
 }
