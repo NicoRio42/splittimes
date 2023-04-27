@@ -4,6 +4,10 @@
 	import { navigating } from '$app/stores';
 </script>
 
+<svelte:head>
+	<title>Split times</title>
+</svelte:head>
+
 <div class="wrapper">
 	{#if $navigating !== null}
 		<progress />
