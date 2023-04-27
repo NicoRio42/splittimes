@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { enhance } from '$app/forms';
 	import type { Event } from '../lib/models/event.model.js';
 
 	export let data;
@@ -69,7 +70,7 @@
 </script>
 
 <main class="container">
-	<form class="form">
+	<form class="form" use:enhance>
 		<label>
 			Date
 
