@@ -14,11 +14,13 @@
 			{/if}
 
 			{#if runnerLeg?.rankSplit}
-				({runnerLeg.rankSplit})
+				<small>
+					({runnerLeg.rankSplit})
+				</small>
 			{/if}
 
 			{#if runnerLeg.timeBehindSplit || runnerLeg.timeLoss}
-				<div class="tooltip">
+				<div class="tooltip" class:tooltip-top={stickyBottom}>
 					{#if runnerLeg.timeBehindSplit}
 						<div class="nowrap">
 							+&nbsp;{secondsToPrettyTime(runnerLeg.timeBehindSplit)}
@@ -40,11 +42,13 @@
 			{/if}
 
 			{#if runnerLeg?.rankOverall}
-				({runnerLeg.rankOverall})
+				<small>
+					({runnerLeg.rankOverall})
+				</small>
 			{/if}
 
 			{#if runnerLeg.timeBehindOverall}
-				<div class="tooltip">
+				<div class="tooltip" class:tooltip-top={stickyBottom}>
 					+&nbsp;{secondsToPrettyTime(runnerLeg.timeBehindOverall)}
 				</div>
 			{/if}
@@ -91,5 +95,6 @@
 		position: sticky;
 		bottom: 0;
 		background-color: var(--background-color);
+		border-top: 0.1875rem solid var(--table-border-color);
 	}
 </style>

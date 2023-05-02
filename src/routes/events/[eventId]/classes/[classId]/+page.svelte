@@ -16,10 +16,17 @@
 
 	onMount(() => {
 		const parser = new DOMParser();
-		const xmlDoc = parser.parseFromString(data.splittimes, 'application/xml');
+		let firstRunner;
 
-		runners = parseIOFXML3SplitTimesFile(xmlDoc, $page.params.classId, '+02:00', 0);
-		const firstRunner = runners[0];
+		try {
+			const xmlDoc = parser.parseFromString(data.splittimes, 'application/xml');
+			runners = parseIOFXML3SplitTimesFile(xmlDoc, $page.params.classId, '+02:00', 0);
+			firstRunner = runners[0];
+		} catch (e) {
+			alert('An error occured while loading split times. ' + e);
+			console.error(e);
+			return;
+		}
 
 		if (firstRunner !== undefined) {
 			legs = firstRunner.legs;
@@ -77,7 +84,9 @@
 									{/if}
 
 									{#if runner.rank}
-										({runner.rank})
+										<small>
+											({runner.rank})
+										</small>
 									{/if}
 								</div>
 							{/if}
@@ -107,8 +116,8 @@
 			{/each}
 
 			{#if selectedRunner !== undefined}
-				<tr>
-					<td class="sticky-left sticky-bottom">
+				<tr class="selected-runner-row">
+					<td class="sticky-left sticky-bottom selected-runner-td">
 						{#if compact}
 							{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
 						{:else}
@@ -192,6 +201,7 @@
 
 	.sticky-left {
 		left: 0;
+		border-right: 0.1875rem solid var(--table-border-color);
 	}
 
 	.sticky-bottom {
@@ -224,5 +234,10 @@
 
 	table {
 		margin: 0;
+		border-collapse: initial;
+	}
+
+	.selected-runner-td {
+		border-top: 0.1875rem solid var(--table-border-color);
 	}
 </style>
