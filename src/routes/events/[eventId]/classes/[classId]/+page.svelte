@@ -62,8 +62,14 @@
 					</button>
 				</th>
 
-				{#each legs as leg, index}
-					<th class="sticky-top center">{index + 1}</th>
+				{#each legs as _, index}
+					<th class="sticky-top center">
+						{#if index === legs.length - 1}
+							Finish
+						{:else}
+							{index + 1}
+						{/if}
+					</th>
 				{/each}
 			</tr>
 		</thead>
@@ -214,6 +220,8 @@
 
 	.selected-runner {
 		margin: 0;
+		padding: 0.25rem 1rem 0.25rem 0.25rem;
+		background-position: center right 0;
 	}
 
 	@media (prefers-color-scheme: light) {
@@ -239,5 +247,7 @@
 
 	.selected-runner-td {
 		border-top: 0.1875rem solid var(--table-border-color);
+		padding-left: 0.125rem;
+		padding-right: 0.125rem;
 	}
 </style>
