@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import z from 'zod';
-import { TWO_D_RERUN_URL } from '../lib/constants.js';
+import { TWO_D_RERUN_URL } from '$lib/constants.js';
 
 export async function load({ url, fetch }) {
 	const dateSearch = url.searchParams.get('date');
@@ -17,8 +17,6 @@ export async function load({ url, fetch }) {
 
 	const response = await fetch(`${TWO_D_RERUN_URL}?date=${date}`);
 	const events = await response.text();
-
-	console.log('EVENTS', typeof events, `${TWO_D_RERUN_URL}?date=${date}`);
 
 	return { events, date };
 }

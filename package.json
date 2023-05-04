@@ -29,6 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"orienteering-js": "^0.0.8",
 		"zod": "^3.21.4"
 	}
 }

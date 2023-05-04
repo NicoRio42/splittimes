@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { WinsplitClass } from '../../../lib/models/class.model.js';
+	import type { WinsplitClass } from '$lib/models/class.model.js';
 	import { page } from '$app/stores';
 
 	export let data;
@@ -10,8 +10,6 @@
 		const parser = new DOMParser();
 		const xmlDoc = parser.parseFromString(data.classes, 'application/xml');
 		const eventTags = xmlDoc.querySelectorAll('Class');
-
-		console.log(xmlDoc);
 
 		classes = Array.from(eventTags).map((eventTag) => {
 			const idTag = eventTag.querySelector('Id');

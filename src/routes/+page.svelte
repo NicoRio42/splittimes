@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import type { Event } from '../lib/models/event.model.js';
+	import type { Event } from '$lib/models/event.model.js';
 
 	export let data;
 

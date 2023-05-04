@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { RunnerLeg } from '$lib/o-utils/models/runner-leg';
-	import { rankToCSSClass, secondsToPrettyTime } from '$lib/utils';
+	import type { RunnerLeg } from 'orienteering-js/models';
+	import { rankToCSSClass, secondsToPrettyTime } from '$lib/utils.js';
 
 	export let runnerLeg: RunnerLeg | null;
 	export let stickyBottom = false;

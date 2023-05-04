@@ -2,10 +2,9 @@
 	import { page } from '$app/stores';
 	import { secondsToPrettyTime } from '$lib/utils.js';
 	import { onMount } from 'svelte';
-	import type { RunnerLeg } from '../../../../../lib/o-utils/models/runner-leg.js';
-	import type Runner from '../../../../../lib/o-utils/models/runner.js';
-	import { parseIOFXML3SplitTimesFile } from '../../../../../lib/o-utils/split-times/parsers/iof-xml-3.js';
 	import LegCell from './components/LegCell.svelte';
+	import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
+	import type { Runner, RunnerLeg } from 'orienteering-js/models';
 
 	export let data;
 

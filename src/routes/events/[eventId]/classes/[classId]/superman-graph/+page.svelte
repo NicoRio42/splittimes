@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Polyline from '../components/Polyline.svelte';
-	import type Runner from '$lib/o-utils/models/runner';
-	import { parseIOFXML3SplitTimesFile } from '$lib/o-utils/split-times/parsers/iof-xml-3';
 	import { page } from '$app/stores';
+	import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
+	import type { Runner } from 'orienteering-js/models';
 
 	export let data;
 	let runners: Runner[];
