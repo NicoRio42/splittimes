@@ -1,37 +1,14 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { secondsToPrettyTime } from '$lib/utils.js';
-	import { onMount } from 'svelte';
-	import LegCell from './components/LegCell.svelte';
-	import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
+	import LegCell from './components/LegCell.svelte';
 
 	export let data;
 
-	let runners: Runner[] = [];
-	let legs: (RunnerLeg | null)[] = [];
+	let runners: Runner[] = data.runners;
+	let selectedRunner = runners[0];
+	let legs: (RunnerLeg | null)[] = selectedRunner !== undefined ? selectedRunner.legs : [];
 	let compact = false;
-	let selectedRunner: Runner;
-
-	onMount(() => {
-		const parser = new DOMParser();
-		let firstRunner;
-
-		try {
-			const xmlDoc = parser.parseFromString(data.splittimes, 'application/xml');
-			runners = parseIOFXML3SplitTimesFile(xmlDoc, $page.params.classId, '+02:00', 0);
-			firstRunner = runners[0];
-		} catch (e) {
-			alert('An error occured while loading split times. ' + e);
-			console.error(e);
-			return;
-		}
-
-		if (firstRunner !== undefined) {
-			legs = firstRunner.legs;
-			selectedRunner = firstRunner;
-		}
-	});
 </script>
 
 <figure class="wrapper">

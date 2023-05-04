@@ -1,4 +1,4 @@
 export enum ProvidersEnum {
-	WINSPLIT = 'winsplit',
+	WINSPLIT = 'winsplits',
 	ROUTECHOICE_DB = 'routechoice-db'
 }

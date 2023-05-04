@@ -1,23 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Polyline from '../components/Polyline.svelte';
-	import { page } from '$app/stores';
-	import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
-	import type { Runner } from 'orienteering-js/models';
 
 	export let data;
-	let runners: Runner[];
+	let runners = data.runners;
 	let supermanOverall: number[];
 	let maxX = 0;
 	let maxY = 0;
 
 	onMount(() => {
-		const parser = new DOMParser();
-
 		try {
-			const xmlDoc = parser.parseFromString(data.splittimes, 'application/xml');
-			runners = parseIOFXML3SplitTimesFile(xmlDoc, $page.params.classId, '+02:00', 0);
-
 			let previousTime = 0;
 
 			supermanOverall = runners[0].legs.map((leg, legIndex) => {
