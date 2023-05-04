@@ -1,57 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import type { Event } from '$lib/models/event.model.js';
 
 	export let data;
 
-	let events: Event[] = [];
-	let filteredEvents: Event[] = [];
+	let events: Event[] = data.events;
+	let filteredEvents: Event[] = [...data.events];
 	let filter = '';
-
-	$: if (browser) initEvents(data.events);
-
-	function initEvents(eventsString: string) {
-		const parser = new DOMParser();
-		const xmlDoc = parser.parseFromString(eventsString, 'text/xml');
-		const eventTags = xmlDoc.querySelectorAll('Event');
-
-		events = Array.from(eventTags).map((eventTag) => {
-			const idTag = eventTag.querySelector('Id');
-			const nameTag = eventTag.querySelector('Name');
-			const typeTag = eventTag.querySelector('Classification');
-			const organiserTag = eventTag.querySelector('Organiser Name');
-			const countryTag = eventTag.querySelector('Organiser Country');
-
-			if (
-				idTag === null ||
-				nameTag === null ||
-				typeTag === null ||
-				organiserTag === null ||
-				countryTag === null
-			)
-				throw new Error('Problem with file format');
-
-			const id = idTag.textContent;
-			const name = nameTag.textContent;
-			const type = typeTag.textContent;
-			const organiser = organiserTag.textContent;
-			const country = countryTag.getAttribute('code');
-
-			if (id === null || name === null || type === null || organiser === null || country === null)
-				throw new Error('Problem with file format');
-
-			return {
-				id,
-				name,
-				type,
-				organiser,
-				country
-			};
-		});
-
-		filteredEvents = [...events];
-		filter = '';
-	}
 
 	function handleFilter() {
 		const lowercaseFilter = filter.toLowerCase();
@@ -95,7 +49,7 @@
 			<tbody>
 				{#each filteredEvents as event (event.id)}
 					<tr>
-						<td><a href={`/events/${event.id}`}> {event.name} </a></td>
+						<td><a href={`/winsplits/${event.id}`}> {event.name} </a></td>
 						<td>{event.type}</td>
 						<td>{event.organiser}</td>
 						<td>{event.country}</td>
