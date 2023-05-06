@@ -161,6 +161,10 @@
 		position: relative;
 	}
 
+	table {
+		font-size: 1rem;
+	}
+
 	.center {
 		text-align: center;
 	}
