@@ -7,6 +7,7 @@ import { collection, getDocs, getFirestore, query } from 'firebase/firestore/lit
 import { DOMParser } from 'linkedom';
 import { runnerValidator, type Runner } from 'orienteering-js/models';
 import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
+import { routesColors } from 'orienteering-js/ocad';
 
 export async function load({ fetch, params }) {
 	if (params.provider === ProvidersEnum.WINSPLIT)
@@ -42,7 +43,10 @@ async function getSplittimesFromRoutechoiceDBDev(eventID: string) {
 		return r1.rank - r2.rank;
 	});
 
-	return { runners };
+	return {
+		runners: addRunnerTrackColorIfDontExists(runners),
+		supermanOverall: getSupermanOverallTimes(runners)
+	};
 }
 
 async function getSplittimesFromWinsplits(
@@ -60,9 +64,42 @@ async function getSplittimesFromWinsplits(
 		// @ts-ignore
 		const xmlDoc = xmlDocFromLinkeDom as XMLDocument;
 		const runners = parseIOFXML3SplitTimesFile(xmlDoc, classId, '+02:00', 0);
-		console.log(runners);
-		return { runners };
+		return {
+			runners: addRunnerTrackColorIfDontExists(runners),
+			supermanOverall: getSupermanOverallTimes(runners)
+		};
 	} catch (e) {
 		throw error(500, 'An error occured while loading split times.');
 	}
+}
+
+function getSupermanOverallTimes(runners: Runner[]): number[] {
+	let previousTime = 0;
+
+	const supermanOverall = runners[0].legs.map((leg, legIndex) => {
+		let bestSplit = leg?.time ?? null;
+
+		runners.forEach((runner) => {
+			const runnerLeg = runner.legs[legIndex];
+			if (runnerLeg === null) return;
+			if (bestSplit === null || runnerLeg.time < bestSplit) bestSplit = runnerLeg.time;
+		});
+
+		if (bestSplit === null) throw new Error('Not enouth runners');
+
+		const time = previousTime + bestSplit;
+		previousTime = time;
+		return time;
+	});
+
+	return supermanOverall;
+}
+
+function addRunnerTrackColorIfDontExists(runners: Runner[]): Runner[] {
+	return runners.map((runner, index) => {
+		if (!runner.track?.color)
+			runner.track = { color: routesColors[index], lats: [], lons: [], times: [] };
+
+		return runner;
+	});
 }
