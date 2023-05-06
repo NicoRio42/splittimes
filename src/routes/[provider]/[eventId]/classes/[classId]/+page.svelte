@@ -54,39 +54,39 @@
 			{#each runners as runner (runner.id)}
 				<tr>
 					<td class="sticky-left">
-						<div class="tooltip-container">
-							{#if compact}
-								{runner.firstName?.at(0)}{runner.lastName?.at(0)}
-							{:else}
-								{runner.firstName?.at(0)}.{runner.lastName}
-
-								<div>
-									{#if runner.time}
-										{secondsToPrettyTime(runner.time)}
-									{/if}
-
-									{#if runner.rank}
-										<small>
-											({runner.rank})
-										</small>
-									{/if}
-								</div>
+						<div class="name-td-content">
+							{#if runner.rank}
+								{runner.rank}
 							{/if}
 
-							<div class="tooltip tooltip-right">
-								<div class="nowrap">
-									{runner.firstName}&nbsp;{runner.lastName}
-								</div>
+							<div class="tooltip-container">
+								{#if compact}
+									{runner.firstName?.at(0)}{runner.lastName?.at(0)}
+								{:else}
+									{runner.firstName?.at(0)}.{runner.lastName}
 
-								{#if runner.timeBehind}
-									+&nbsp;{secondsToPrettyTime(runner.timeBehind)}
+									{#if runner.time}
+										<div>
+											{secondsToPrettyTime(runner.time)}
+										</div>
+									{/if}
 								{/if}
 
-								{#if runner.totalTimeLost}
+								<div class="tooltip tooltip-right">
 									<div class="nowrap">
-										Time lost:&nbsp;{secondsToPrettyTime(runner.totalTimeLost)}
+										{runner.firstName}&nbsp;{runner.lastName}
 									</div>
-								{/if}
+
+									{#if runner.timeBehind}
+										+&nbsp;{secondsToPrettyTime(runner.timeBehind)}
+									{/if}
+
+									{#if runner.totalTimeLost}
+										<div class="nowrap">
+											Time lost:&nbsp;{secondsToPrettyTime(runner.totalTimeLost)}
+										</div>
+									{/if}
+								</div>
 							</div>
 						</div>
 					</td>
@@ -100,21 +100,27 @@
 			{#if selectedRunner !== undefined}
 				<tr class="selected-runner-row">
 					<td class="sticky-left sticky-bottom selected-runner-td">
-						{#if compact}
-							{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
-						{:else}
-							<select class="selected-runner" bind:value={selectedRunner}>
-								{#each runners as runner (runner.id)}
-									<option value={runner}>
-										{#if compact}
-											{runner.firstName?.at(0)}{runner.lastName?.at(0)}
-										{:else}
-											{runner.firstName?.at(0)}.{runner.lastName}
-										{/if}
-									</option>
-								{/each}
-							</select>
-						{/if}
+						<div class="name-td-content">
+							{#if selectedRunner.rank}
+								{selectedRunner.rank}
+							{/if}
+
+							{#if compact}
+								{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
+							{:else}
+								<select class="selected-runner" bind:value={selectedRunner}>
+									{#each runners as runner (runner.id)}
+										<option value={runner}>
+											{#if compact}
+												{runner.firstName?.at(0)}{runner.lastName?.at(0)}
+											{:else}
+												{runner.firstName?.at(0)}.{runner.lastName}
+											{/if}
+										</option>
+									{/each}
+								</select>
+							{/if}
+						</div>
 					</td>
 
 					{#each selectedRunner.legs as runnerLeg}
@@ -161,12 +167,14 @@
 		position: relative;
 	}
 
-	table {
+	table,
+	.selected-runner {
 		font-size: 1rem;
 	}
 
 	@media (max-width: 768px) {
-		table {
+		table,
+		.selected-runner {
 			font-size: 0.875rem;
 		}
 	}
@@ -177,6 +185,13 @@
 
 	.name-th {
 		z-index: 2;
+	}
+
+	.name-td-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		height: 100%;
 	}
 
 	.sticky-top,
