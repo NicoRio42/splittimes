@@ -1,15 +1,17 @@
 <script lang="ts">
+	import { RunnerStatusEnum } from 'orienteering-js/models';
 	import Polyline from '../components/Polyline.svelte';
 
 	export let data;
-	let selectedRunners = data.runners.slice(0, 10);
+	let runners = data.runners.filter((r) => r.status === RunnerStatusEnum.OK);
+	let selectedRunners = runners.slice(0, 6);
 
 	$: maxY = Math.max(...selectedRunners.map((r) => r.legs.at(-1)?.timeBehindSuperman ?? 0));
 </script>
 
 <figure>
 	<form action="">
-		{#each data.runners as runner (runner.id)}
+		{#each runners as runner (runner.id)}
 			<label style:color={runner.track?.color ?? 'black'}>
 				<input type="checkbox" value={runner} bind:group={selectedRunners} />
 
@@ -24,7 +26,7 @@
 		preserveAspectRatio="none"
 		viewBox="0 0 {data.supermanOverall.at(-1)} {maxY}"
 	>
-		{#if data.runners !== undefined && data.supermanOverall !== undefined}
+		{#if runners !== undefined && data.supermanOverall !== undefined}
 			{#each selectedRunners as runner (runner.id)}
 				<Polyline
 					color={runner.track?.color ?? 'black'}
@@ -52,9 +54,16 @@
 		height: 100%;
 		overflow-y: scroll;
 		margin: 0;
+		flex: none;
 	}
 
 	label {
 		white-space: nowrap;
+	}
+
+	@media (max-width: 768px) {
+		svg {
+			width: 200%;
+		}
 	}
 </style>
