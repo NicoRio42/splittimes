@@ -165,6 +165,12 @@
 		font-size: 1rem;
 	}
 
+	@media (max-width: 768px) {
+		table {
+			font-size: 0.875rem;
+		}
+	}
+
 	.center {
 		text-align: center;
 	}

@@ -23,7 +23,7 @@ body {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	top: calc(100% + 1rem);
+	top: 100%;
 	color: #fff;
 	background-color: #616161;
 	padding-left: 8px;
@@ -38,12 +38,12 @@ body {
 .tooltip-right {
 	top: 50%;
 	transform: translateY(-50%);
-	left: calc(100% + 1rem);
+	left: 100%;
 }
 
 .tooltip-top {
 	top: unset;
-	bottom: calc(100% + 1rem);
+	bottom: 100%;
 }
 
 td {
