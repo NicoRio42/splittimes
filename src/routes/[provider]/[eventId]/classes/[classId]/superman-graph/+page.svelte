@@ -1,24 +1,44 @@
 <script lang="ts">
 	import { RunnerStatusEnum } from 'orienteering-js/models';
 	import Polyline from '../components/Polyline.svelte';
+	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
 
 	export let data;
 	let runners = data.runners.filter((r) => r.status === RunnerStatusEnum.OK);
 	let selectedRunners = runners.slice(0, 6);
 	let isMouseInGraph = false;
 	let hoveredLegNumber = 1;
-
+	let compact = false;
 	const maxX = data.supermanOverall.at(-1)!;
-	$: maxY = Math.max(...selectedRunners.map((r) => r.legs.at(-1)?.timeBehindSuperman ?? 0));
+
+	$: areAllRunnersSelected = selectedRunners.length === runners.length;
+	$: maxY =
+		selectedRunners.length === 0
+			? 0
+			: Math.max(...selectedRunners.map((r) => r.legs.at(-1)?.timeBehindSuperman ?? 0));
 </script>
 
 <figure>
 	<form action="">
+		<p class="header">
+			<input
+				type="checkbox"
+				checked={areAllRunnersSelected}
+				on:change={(e) => (selectedRunners = e.currentTarget.checked ? runners : [])}
+			/>
+
+			<EnlargeToggle bind:compact />
+		</p>
+
 		{#each runners as runner (runner.id)}
 			<label style:color={runner.track?.color ?? 'black'}>
 				<input type="checkbox" value={runner} bind:group={selectedRunners} />
 
-				{runner.lastName}
+				{#if compact}
+					{runner.firstName.at(0)}.{runner.lastName.at(0)}
+				{:else}
+					{runner.firstName.at(0)}. {runner.lastName}
+				{/if}
 			</label>
 		{/each}
 	</form>
@@ -96,6 +116,12 @@
 		overflow-y: scroll;
 		margin: 0;
 		flex: none;
+	}
+
+	.header {
+		display: flex;
+		align-items: center;
+		margin: 0.125rem 0;
 	}
 
 	label {
