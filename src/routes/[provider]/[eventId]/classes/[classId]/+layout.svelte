@@ -39,7 +39,7 @@
 		margin: 0.25rem;
 	}
 
-	@media (min-width: 25rem) {
+	@media (min-width: 20rem) {
 		details {
 			width: 20rem;
 			margin-left: auto;
