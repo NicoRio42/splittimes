@@ -2,14 +2,16 @@
 	import { RunnerStatusEnum } from 'orienteering-js/models';
 	import Polyline from '../components/Polyline.svelte';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
+	import { clickOutside } from '$lib/actions/click-outside.js';
+	import { secondsToPrettyTime } from '$lib/utils.js';
 
 	export let data;
 	let runners = data.runners.filter((r) => r.status === RunnerStatusEnum.OK);
 	let selectedRunners = runners.slice(0, 6);
-	let isMouseInGraph = false;
-	let hoveredLegNumber = 1;
+	let hoveredLegIndex = 1;
 	let compact = false;
 	const maxX = data.supermanOverall.at(-1)!;
+	let displayPanel = false;
 
 	$: areAllRunnersSelected = selectedRunners.length === runners.length;
 	$: maxY =
@@ -18,8 +20,14 @@
 			: Math.max(...selectedRunners.map((r) => r.legs.at(-1)?.timeBehindSuperman ?? 0));
 </script>
 
+<svelte:window
+	on:keydown={(e) => {
+		if (e.key === 'Escape') displayPanel = false;
+	}}
+/>
+
 <figure>
-	<form action="">
+	<form>
 		<p class="header">
 			<input
 				type="checkbox"
@@ -43,17 +51,15 @@
 		{/each}
 	</form>
 
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div
 		class="svg-wrapper"
-		on:mouseenter={() => (isMouseInGraph = true)}
-		on:mouseleave={() => (isMouseInGraph = false)}
-		on:mousemove={(e) => {
-			const x =
-				((e.clientX + e.currentTarget.clientWidth - window.innerWidth) * maxX) /
-				e.currentTarget.clientWidth;
-
-			hoveredLegNumber = data.supermanOverall.findIndex((l) => x < l) + 1;
+		on:click={(e) => {
+			const x = (e.offsetX * maxX) / e.currentTarget.clientWidth;
+			hoveredLegIndex = data.supermanOverall.findIndex((l) => x < l);
+			displayPanel = true;
 		}}
+		use:clickOutside={() => (displayPanel = false)}
 	>
 		<svg height="100%" width="100%" preserveAspectRatio="none" viewBox="0 0 {maxX} {maxY}">
 			{#each data.supermanOverall as leg, index (index)}
@@ -69,10 +75,12 @@
 			{#each selectedRunners as runner (runner.id)}
 				<Polyline
 					color={runner.track?.color ?? 'black'}
-					points={runner.legs.map((leg, index) => {
-						if (index === 0) return [0, 0];
-						return [data.supermanOverall[index], leg?.timeBehindSuperman ?? 0];
-					})}
+					points={[[0, 0]].concat(
+						runner.legs.map((leg, index) => [
+							data.supermanOverall[index],
+							leg?.timeBehindSuperman ?? 0
+						])
+					)}
 				/>
 			{/each}
 		</svg>
@@ -83,18 +91,42 @@
 			{/if}
 		{/each}
 
-		{#if isMouseInGraph}
+		{#if displayPanel}
+			{@const sortedSelectedRunners = [...selectedRunners].sort((r1, r2) => {
+				const leg1 = r1.legs[hoveredLegIndex];
+				const leg2 = r2.legs[hoveredLegIndex];
+
+				if (leg1 === null && leg2 === null) return 0;
+				if (leg1 === null) return 1;
+				if (leg2 === null) return -1;
+				return leg1.rankSplit - leg2.rankSplit;
+			})}
+
 			<article
 				class="leg-panel"
-				style:left={hoveredLegNumber < data.supermanOverall.length / 2
-					? (data.supermanOverall[hoveredLegNumber - 1] / maxX) * 100 + '%'
+				style:left={hoveredLegIndex < data.supermanOverall.length / 2
+					? (data.supermanOverall[hoveredLegIndex] / maxX) * 100 + '%'
 					: 'unset'}
-				style:right={hoveredLegNumber >= data.supermanOverall.length / 2
-					? (1 - data.supermanOverall[hoveredLegNumber - 2] / maxX) * 100 + '%'
+				style:right={hoveredLegIndex >= data.supermanOverall.length / 2
+					? (1 - data.supermanOverall[hoveredLegIndex - 1] / maxX) * 100 + '%'
 					: 'unset'}
 			>
-				{#each selectedRunners as runner (runner.id)}
-					<p>{runner.lastName}: {runner.legs[hoveredLegNumber - 1]?.timeBehindSuperman}</p>
+				<p>
+					Leg: {hoveredLegIndex + 1}
+
+					<button type="button" class="close-button" on:click={() => (displayPanel = false)}>
+						X
+					</button>
+				</p>
+
+				{#each sortedSelectedRunners as runner (runner.id)}
+					{@const leg = runner.legs[hoveredLegIndex]}
+
+					{#if leg !== null}
+						<p class="leg-panel-line">
+							{runner.lastName}: {secondsToPrettyTime(leg.timeBehindSuperman)}
+						</p>
+					{/if}
 				{/each}
 			</article>
 		{/if}
@@ -115,6 +147,8 @@
 		height: 100%;
 		overflow-y: scroll;
 		margin: 0;
+		padding-left: 0.5rem;
+		padding-right: 0.25rem;
 		flex: none;
 	}
 
@@ -122,10 +156,12 @@
 		display: flex;
 		align-items: center;
 		margin: 0.125rem 0;
+		font-size: 1rem;
 	}
 
 	label {
 		white-space: nowrap;
+		font-size: 1rem;
 	}
 
 	.svg-wrapper {
@@ -149,9 +185,23 @@
 		margin: 0;
 	}
 
+	.close-button {
+		width: fit-content;
+		background-color: transparent;
+		box-shadow: none;
+		border: none;
+		margin: 0;
+		padding: 0;
+		display: inline;
+	}
+
+	.leg-panel-line {
+		margin: 0;
+	}
+
 	@media (max-width: 768px) {
 		svg {
-			width: 25rem;
+			width: 35rem;
 		}
 	}
 </style>

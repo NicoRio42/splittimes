@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let points: [number, number][];
+	export let points: number[][];
 	export let color: string;
 </script>
 
