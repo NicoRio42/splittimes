@@ -5,7 +5,10 @@
 	export let data;
 	let runners = data.runners.filter((r) => r.status === RunnerStatusEnum.OK);
 	let selectedRunners = runners.slice(0, 6);
+	let isMouseInGraph = false;
+	let hoveredLegNumber = 1;
 
+	const maxX = data.supermanOverall.at(-1)!;
 	$: maxY = Math.max(...selectedRunners.map((r) => r.legs.at(-1)?.timeBehindSuperman ?? 0));
 </script>
 
@@ -20,13 +23,29 @@
 		{/each}
 	</form>
 
-	<svg
-		height="100%"
-		width="100%"
-		preserveAspectRatio="none"
-		viewBox="0 0 {data.supermanOverall.at(-1)} {maxY}"
+	<div
+		class="svg-wrapper"
+		on:mouseenter={() => (isMouseInGraph = true)}
+		on:mouseleave={() => (isMouseInGraph = false)}
+		on:mousemove={(e) => {
+			const x =
+				((e.clientX + e.currentTarget.clientWidth - window.innerWidth) * maxX) /
+				e.currentTarget.clientWidth;
+
+			hoveredLegNumber = data.supermanOverall.findIndex((l) => x < l) + 1;
+		}}
 	>
-		{#if runners !== undefined && data.supermanOverall !== undefined}
+		<svg height="100%" width="100%" preserveAspectRatio="none" viewBox="0 0 {maxX} {maxY}">
+			{#each data.supermanOverall as leg, index (index)}
+				<Polyline
+					color="var(--table-border-color)"
+					points={[
+						[leg, 0],
+						[leg, maxY]
+					]}
+				/>
+			{/each}
+
 			{#each selectedRunners as runner (runner.id)}
 				<Polyline
 					color={runner.track?.color ?? 'black'}
@@ -36,8 +55,30 @@
 					})}
 				/>
 			{/each}
+		</svg>
+
+		{#each data.supermanOverall as leg, index (index)}
+			{#if index !== data.supermanOverall.length - 1}
+				<p class="x-label" style:left={(leg / maxX) * 100 + '%'}>{index + 1}</p>
+			{/if}
+		{/each}
+
+		{#if isMouseInGraph}
+			<article
+				class="leg-panel"
+				style:left={hoveredLegNumber < data.supermanOverall.length / 2
+					? (data.supermanOverall[hoveredLegNumber - 1] / maxX) * 100 + '%'
+					: 'unset'}
+				style:right={hoveredLegNumber >= data.supermanOverall.length / 2
+					? (1 - data.supermanOverall[hoveredLegNumber - 2] / maxX) * 100 + '%'
+					: 'unset'}
+			>
+				{#each selectedRunners as runner (runner.id)}
+					<p>{runner.lastName}: {runner.legs[hoveredLegNumber - 1]?.timeBehindSuperman}</p>
+				{/each}
+			</article>
 		{/if}
-	</svg>
+	</div>
 </figure>
 
 <style>
@@ -61,9 +102,30 @@
 		white-space: nowrap;
 	}
 
+	.svg-wrapper {
+		padding-bottom: 1.75rem;
+		position: relative;
+	}
+
+	.x-label {
+		position: absolute;
+		bottom: 0.25rem;
+		margin: 0;
+		transform: translateX(-50%);
+		font-size: 0.75rem;
+	}
+
+	.leg-panel {
+		position: absolute;
+		top: 0;
+		left: 0;
+		padding: 0;
+		margin: 0;
+	}
+
 	@media (max-width: 768px) {
 		svg {
-			width: 200%;
+			width: 25rem;
 		}
 	}
 </style>
