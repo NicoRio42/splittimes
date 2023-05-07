@@ -18,6 +18,7 @@
 			<tr>
 				<th class="sticky-top sticky-left compact-toggle name-th">
 					<EnlargeToggle bind:compact />
+					<!-- <input type="checkbox" id="compact-checkbox" /> -->
 				</th>
 
 				{#each legs as _, index}
@@ -115,6 +116,22 @@
 </figure>
 
 <style>
+	/* table:has(#compact-checkbox:checked) .compact {
+		display: block;
+	}
+
+	table:has(#compact-checkbox:checked) .large {
+		display: none;
+	}
+
+	table:has(#compact-checkbox:not(:checked)) .compact {
+		display: none;
+	}
+
+	table:has(#compact-checkbox:not(:checked)) .large {
+		display: block;
+	} */
+
 	.wrapper {
 		flex-basis: 0;
 		flex-shrink: 0;
@@ -179,18 +196,6 @@
 		margin: 0;
 		padding: 0.25rem 1rem 0.25rem 0.25rem;
 		background-position: center right 0;
-	}
-
-	@media (prefers-color-scheme: light) {
-		.enlarge,
-		.shrink {
-			color: var(--h1-color);
-		}
-	}
-
-	:global(html[data-theme='light']) .enlarge,
-	:global(html[data-theme='light']) .shrink {
-		color: var(--h1-color);
 	}
 
 	.compact-toggle {

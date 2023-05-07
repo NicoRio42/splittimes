@@ -7,5 +7,5 @@
 <Graph
 	runners={data.runners}
 	supermanOrLeader={data.supermanOverall}
-	runnerLegKey={'timeBehindSuperman'}
+	runnerLegKey={'timeBehindOverall'}
 />

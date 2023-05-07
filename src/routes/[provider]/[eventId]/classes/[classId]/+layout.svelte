@@ -8,22 +8,35 @@
 	afterNavigate(() => detailsElement?.removeAttribute('open'));
 </script>
 
-<details role="list" bind:this={detailsElement}>
-	<summary aria-haspopup="listbox">
-		{#if $page.url.pathname.includes('superman-graph')}
-			Superman graph
-		{:else}
-			Table
-		{/if}
-	</summary>
+<div>
+	<details role="list" bind:this={detailsElement}>
+		<summary aria-haspopup="listbox">
+			{#if $page.url.pathname.includes('superman-graph')}
+				Superman graph
+			{:else if $page.url.pathname.includes('leader-graph')}
+				Leader graph
+			{:else}
+				Table
+			{/if}
+		</summary>
 
-	<ul role="listbox">
-		<li>
-			<a href={baseUrl}> Table </a>
-		</li>
+		<ul role="listbox">
+			<li>
+				<a href={baseUrl}> Table </a>
+			</li>
 
-		<li><a href={`${baseUrl}/superman-graph`}>Superman graph</a></li>
-	</ul>
-</details>
+			<li><a href="{baseUrl}/superman-graph">Superman graph</a></li>
+
+			<li><a href="{baseUrl}/leader-graph">Leader graph</a></li>
+		</ul>
+	</details>
+</div>
 
 <slot />
+
+<style>
+	details {
+		width: 25rem;
+		margin: 0.25rem auto;
+	}
+</style>

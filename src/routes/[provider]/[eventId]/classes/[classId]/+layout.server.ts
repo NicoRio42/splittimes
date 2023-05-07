@@ -45,7 +45,8 @@ async function getSplittimesFromRoutechoiceDBDev(eventID: string) {
 
 	return {
 		runners: addRunnerTrackColorIfDontExists(runners),
-		supermanOverall: getSupermanOverallTimes(runners)
+		supermanOverall: getSupermanOverallTimes(runners),
+		leaderOverall: getLeaderOverallTimes(runners)
 	};
 }
 
@@ -66,7 +67,8 @@ async function getSplittimesFromWinsplits(
 		const runners = parseIOFXML3SplitTimesFile(xmlDoc, classId, '+02:00', 0);
 		return {
 			runners: addRunnerTrackColorIfDontExists(runners),
-			supermanOverall: getSupermanOverallTimes(runners)
+			supermanOverall: getSupermanOverallTimes(runners),
+			leaderOverall: getLeaderOverallTimes(runners)
 		};
 	} catch (e) {
 		throw error(500, 'An error occured while loading split times.');
@@ -93,6 +95,23 @@ function getSupermanOverallTimes(runners: Runner[]): number[] {
 	});
 
 	return supermanOverall;
+}
+
+function getLeaderOverallTimes(runners: Runner[]): number[] {
+	return runners[0].legs.map((leg, legIndex) => {
+		let bestOverallTime = leg?.timeOverall ?? null;
+
+		runners.forEach((runner) => {
+			const runnerLeg = runner.legs[legIndex];
+			if (runnerLeg === null) return;
+			if (bestOverallTime === null || runnerLeg.timeOverall < bestOverallTime)
+				bestOverallTime = runnerLeg.timeOverall;
+		});
+
+		if (bestOverallTime === null) throw new Error('Not enouth runners');
+
+		return bestOverallTime;
+	});
 }
 
 function addRunnerTrackColorIfDontExists(runners: Runner[]): Runner[] {
