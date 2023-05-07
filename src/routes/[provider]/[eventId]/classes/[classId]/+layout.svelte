@@ -36,7 +36,14 @@
 
 <style>
 	details {
-		width: 25rem;
-		margin: 0.25rem auto;
+		margin: 0.25rem;
+	}
+
+	@media (min-width: 25rem) {
+		details {
+			width: 20rem;
+			margin-left: auto;
+			margin-right: auto;
+		}
 	}
 </style>
