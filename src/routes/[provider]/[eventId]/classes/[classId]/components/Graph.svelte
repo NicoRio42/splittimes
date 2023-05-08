@@ -3,7 +3,7 @@
 	import Polyline from '../components/Polyline.svelte';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
 	import { clickOutside } from '$lib/actions/click-outside.js';
-	import { secondsToPrettyTime } from '$lib/utils.js';
+	import { addAlpha, secondsToPrettyTime } from '$lib/utils.js';
 
 	export let runners: Runner[];
 	export let supermanOrLeader: number[];
@@ -34,18 +34,29 @@
 <figure>
 	<form>
 		<p class="header">
-			<input
-				type="checkbox"
-				checked={areAllRunnersSelected}
-				on:change={(e) => (selectedRunners = e.currentTarget.checked ? validRunners : [])}
-			/>
+			<small>
+				<input
+					type="checkbox"
+					checked={areAllRunnersSelected}
+					on:change={(e) => (selectedRunners = e.currentTarget.checked ? validRunners : [])}
+				/>
+			</small>
 
 			<EnlargeToggle bind:compact />
 		</p>
 
 		{#each validRunners as runner (runner.id)}
 			<label style:color={runner.track?.color ?? 'black'}>
-				<input type="checkbox" value={runner} bind:group={selectedRunners} />
+				<small>
+					<input
+						type="checkbox"
+						value={runner}
+						bind:group={selectedRunners}
+						style:--border-color={runner.track?.color}
+						style:--primary={runner.track?.color}
+						style:--form-element-focus-color={addAlpha(runner.track?.color ?? '#FFFFFF', 0.13)}
+					/>
+				</small>
 
 				{#if compact}
 					{runner.firstName.at(0)}.{runner.lastName.at(0)}
