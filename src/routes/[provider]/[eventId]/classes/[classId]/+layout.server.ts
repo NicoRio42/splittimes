@@ -1,6 +1,10 @@
 import { TWO_D_RERUN_URL } from '$lib/constants.js';
 import { ProvidersEnum } from '$lib/models/enums/providers.enum.js';
-import { routechoiceDBDevFirebaseConfig } from '$lib/routechoice-db/configs.js';
+import {
+	routechoiceDBDevFirebaseConfig,
+	routechoiceDBProdFirebaseConfig,
+	routechoiceDBStagingFirebaseConfig
+} from '$lib/routechoice-db/configs.js';
 import { error } from '@sveltejs/kit';
 import { initializeApp } from 'firebase/app';
 import { collection, getDocs, getFirestore, query } from 'firebase/firestore/lite';
@@ -14,13 +18,21 @@ export async function load({ fetch, params }) {
 		return getSplittimesFromWinsplits(params.eventId, params.classId, fetch);
 
 	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_DEV)
-		return getSplittimesFromRoutechoiceDBDev(params.eventId);
+		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'dev');
+
+	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_STAGING)
+		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'staging');
+
+	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
+		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'prod');
 
 	throw error(404);
 }
 
-async function getSplittimesFromRoutechoiceDBDev(eventID: string) {
-	initializeApp(routechoiceDBDevFirebaseConfig);
+async function getSplittimesFromRoutechoiceDBDev(eventID: string, env: 'dev' | 'staging' | 'prod') {
+	if (env === 'dev') initializeApp(routechoiceDBDevFirebaseConfig);
+	if (env === 'staging') initializeApp(routechoiceDBStagingFirebaseConfig);
+	if (env === 'prod') initializeApp(routechoiceDBProdFirebaseConfig);
 	const db = getFirestore();
 	const runnersRef = collection(db, 'coursesData', eventID, 'runners');
 	const runnersQuery = query(runnersRef);
