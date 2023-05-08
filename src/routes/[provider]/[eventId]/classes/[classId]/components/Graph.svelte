@@ -164,6 +164,7 @@
 		margin: 0;
 		position: relative;
 		display: flex;
+		padding-right: 0.5rem;
 	}
 
 	form {
