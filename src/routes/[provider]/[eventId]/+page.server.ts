@@ -3,10 +3,21 @@ import { ProvidersEnum } from '$lib/models/enums/providers.enum.js';
 import { error } from '@sveltejs/kit';
 import { DOMParser } from 'linkedom';
 
-export async function load({ fetch, params }) {
-	if (!Object.values(ProvidersEnum).some((p) => params.provider === p)) throw error(404);
+export async function load({ fetch, params: { provider, eventId }, url: { searchParams } }) {
+	if (!Object.values(ProvidersEnum).some((p) => provider === p)) throw error(404);
 
-	const response = await fetch(`${TWO_D_RERUN_URL}?id=${params.eventId}`);
+	let classUrl: string;
+
+	if (provider === ProvidersEnum.FILE_URL) {
+		const fileUrl = searchParams.get('file-url');
+		console.log(fileUrl);
+		if (fileUrl === null) throw error(403);
+		classUrl = decodeURI(fileUrl);
+	} else {
+		classUrl = `${TWO_D_RERUN_URL}?id=${eventId}`;
+	}
+
+	const response = await fetch(classUrl);
 	const classesText = await response.text();
 
 	const parser = new DOMParser();
