@@ -8,9 +8,14 @@
 	<h1>Classes</h1>
 
 	<ul>
-		{#each data.classes as winClass (winClass.id)}
+		{#each data.classes as splitClass (splitClass.id)}
 			<li>
-				<a href={`/winsplits/${$page.params.eventId}/classes/${winClass.id}`}> {winClass.name} </a>
+				<a
+					href="/{$page.params.provider}/{$page.params.eventId}/classes/{splitClass.id}{$page.url
+						.search}"
+				>
+					{splitClass.name}
+				</a>
 			</li>
 		{/each}
 	</ul>

@@ -22,12 +22,12 @@
 
 		<ul role="listbox">
 			<li>
-				<a href={baseUrl}> Table </a>
+				<a href="{baseUrl}{$page.url.search}"> Table </a>
 			</li>
 
-			<li><a href="{baseUrl}/superman-graph">Superman graph</a></li>
+			<li><a href="{baseUrl}/superman-graph{$page.url.search}">Superman graph</a></li>
 
-			<li><a href="{baseUrl}/leader-graph">Leader graph</a></li>
+			<li><a href="{baseUrl}/leader-graph{$page.url.search}">Leader graph</a></li>
 		</ul>
 	</details>
 </div>

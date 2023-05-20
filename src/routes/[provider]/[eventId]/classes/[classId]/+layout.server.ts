@@ -13,20 +13,55 @@ import { runnerValidator, type Runner } from 'orienteering-js/models';
 import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
 import { routesColors } from 'orienteering-js/ocad';
 
-export async function load({ fetch, params }) {
-	if (params.provider === ProvidersEnum.WINSPLIT)
-		return getSplittimesFromWinsplits(params.eventId, params.classId, fetch);
+export async function load({
+	fetch,
+	params: { provider, eventId, classId },
+	url: { searchParams }
+}) {
+	if (provider === ProvidersEnum.WINSPLIT) {
+		const response = await fetch(`${TWO_D_RERUN_URL}?id=${eventId}&classid=${classId}`);
+		const splittimesText = await response.text();
+		return getSplitTimesFromIOFXMLFile(splittimesText, classId);
+	}
 
-	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_DEV)
-		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'dev');
+	if (provider === ProvidersEnum.ROUTECHOICE_DB_DEV)
+		return getSplittimesFromRoutechoiceDBDev(eventId, 'dev');
 
-	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_STAGING)
-		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'staging');
+	if (provider === ProvidersEnum.ROUTECHOICE_DB_STAGING)
+		return getSplittimesFromRoutechoiceDBDev(eventId, 'staging');
 
-	if (params.provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
-		return getSplittimesFromRoutechoiceDBDev(params.eventId, 'prod');
+	if (provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
+		return getSplittimesFromRoutechoiceDBDev(eventId, 'prod');
+
+	if (provider === ProvidersEnum.FILE_URL) {
+		const fileUrl = searchParams.get('file-url');
+		if (fileUrl === null) throw error(403);
+		const decodedFileUrl = decodeURI(fileUrl);
+		const response = await fetch(decodedFileUrl);
+		const splittimesText = await response.text();
+		return getSplitTimesFromIOFXMLFile(splittimesText, classId);
+	}
 
 	throw error(404);
+}
+
+async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) {
+	const parser = new DOMParser();
+
+	try {
+		const xmlDocFromLinkeDom = parser.parseFromString(iofXmlFile, 'text/xml');
+		// @ts-ignore
+		const xmlDoc = xmlDocFromLinkeDom as XMLDocument;
+		const runners = parseIOFXML3SplitTimesFile(xmlDoc, classId, '+02:00', 0);
+		return {
+			runners: addRunnerTrackColorIfDontExists(runners),
+			supermanOverall: getSupermanOverallTimes(runners),
+			leaderOverall: getLeaderOverallTimes(runners)
+		};
+	} catch (e) {
+		console.error(e);
+		throw error(500, 'An error occured while loading split times.');
+	}
 }
 
 async function getSplittimesFromRoutechoiceDBDev(eventID: string, env: 'dev' | 'staging' | 'prod') {
@@ -60,31 +95,6 @@ async function getSplittimesFromRoutechoiceDBDev(eventID: string, env: 'dev' | '
 		supermanOverall: getSupermanOverallTimes(runners),
 		leaderOverall: getLeaderOverallTimes(runners)
 	};
-}
-
-async function getSplittimesFromWinsplits(
-	eventId: string,
-	classId: string,
-	fetch: (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>
-) {
-	const response = await fetch(`${TWO_D_RERUN_URL}?id=${eventId}&classid=${classId}`);
-	const splittimesText = await response.text();
-
-	const parser = new DOMParser();
-
-	try {
-		const xmlDocFromLinkeDom = parser.parseFromString(splittimesText, 'text/xml');
-		// @ts-ignore
-		const xmlDoc = xmlDocFromLinkeDom as XMLDocument;
-		const runners = parseIOFXML3SplitTimesFile(xmlDoc, classId, '+02:00', 0);
-		return {
-			runners: addRunnerTrackColorIfDontExists(runners),
-			supermanOverall: getSupermanOverallTimes(runners),
-			leaderOverall: getLeaderOverallTimes(runners)
-		};
-	} catch (e) {
-		throw error(500, 'An error occured while loading split times.');
-	}
 }
 
 function getSupermanOverallTimes(runners: Runner[]): number[] {

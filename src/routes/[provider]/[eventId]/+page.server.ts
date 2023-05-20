@@ -10,7 +10,6 @@ export async function load({ fetch, params: { provider, eventId }, url: { search
 
 	if (provider === ProvidersEnum.FILE_URL) {
 		const fileUrl = searchParams.get('file-url');
-		console.log(fileUrl);
 		if (fileUrl === null) throw error(403);
 		classUrl = decodeURI(fileUrl);
 	} else {
