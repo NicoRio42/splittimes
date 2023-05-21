@@ -11,7 +11,7 @@ export async function load({ fetch, params: { provider, eventId }, url: { search
 	if (provider === ProvidersEnum.FILE_URL) {
 		const fileUrl = searchParams.get('file-url');
 		if (fileUrl === null) throw error(403);
-		classUrl = decodeURI(fileUrl);
+		classUrl = `${decodeURI(fileUrl)}/classes.xml`;
 	} else {
 		classUrl = `${TWO_D_RERUN_URL}?id=${eventId}`;
 	}

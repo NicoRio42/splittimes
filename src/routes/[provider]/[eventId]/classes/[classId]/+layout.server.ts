@@ -37,7 +37,7 @@ export async function load({
 		const fileUrl = searchParams.get('file-url');
 		if (fileUrl === null) throw error(403);
 		const decodedFileUrl = decodeURI(fileUrl);
-		const response = await fetch(decodedFileUrl);
+		const response = await fetch(`${decodedFileUrl}/${classId}.xml`);
 		const splittimesText = await response.text();
 		return getSplitTimesFromIOFXMLFile(splittimesText, classId);
 	}
