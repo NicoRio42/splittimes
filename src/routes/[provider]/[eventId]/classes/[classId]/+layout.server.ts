@@ -1,17 +1,12 @@
-import { TWO_D_RERUN_URL } from '$lib/constants.js';
+import { ROUTECHOICE_DB_DEV_URL, TWO_D_RERUN_URL } from '$lib/constants.js';
 import { ProvidersEnum } from '$lib/models/enums/providers.enum.js';
-import {
-	routechoiceDBDevFirebaseConfig,
-	routechoiceDBProdFirebaseConfig,
-	routechoiceDBStagingFirebaseConfig
-} from '$lib/routechoice-db/configs.js';
+import type { RoutechoiceDbEvent } from '$lib/models/routechoice-db/event.model.js';
+import type { RoutechoiceDbLeg } from '$lib/models/routechoice-db/leg.model.js';
 import { error } from '@sveltejs/kit';
-import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, query } from 'firebase/firestore/lite';
 import { DOMParser } from 'linkedom';
-import { runnerValidator, type Runner } from 'orienteering-js/models';
-import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
+import type { Runner, RunnerLeg } from 'orienteering-js/models';
 import { routesColors } from 'orienteering-js/ocad';
+import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
 
 export async function load({
 	fetch,
@@ -25,13 +20,13 @@ export async function load({
 	}
 
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_DEV)
-		return getSplittimesFromRoutechoiceDBDev(eventId, 'dev');
+		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'dev');
 
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_STAGING)
-		return getSplittimesFromRoutechoiceDBDev(eventId, 'staging');
+		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'staging');
 
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
-		return getSplittimesFromRoutechoiceDBDev(eventId, 'prod');
+		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'prod');
 
 	if (provider === ProvidersEnum.FILE_URL) {
 		const fileUrl = searchParams.get('file-url');
@@ -49,10 +44,13 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 	const parser = new DOMParser();
 
 	try {
-		const xmlDocFromLinkeDom = parser.parseFromString(iofXmlFile, 'text/xml');
-		// @ts-ignore
-		const xmlDoc = xmlDocFromLinkeDom as XMLDocument;
-		const runners = parseIOFXML3SplitTimesFile(xmlDoc, classId, '+02:00', 0);
+		const xmlDoc = parser.parseFromString(iofXmlFile, 'text/xml');
+		const runners = parseIOFXML3SplitTimesFile(
+			xmlDoc as unknown as XMLDocument,
+			classId,
+			'+02:00',
+			0
+		);
 		return {
 			runners: addRunnerTrackColorIfDontExists(runners),
 			supermanOverall: getSupermanOverallTimes(runners),
@@ -64,30 +62,76 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 	}
 }
 
-async function getSplittimesFromRoutechoiceDBDev(eventID: string, env: 'dev' | 'staging' | 'prod') {
-	if (env === 'dev') initializeApp(routechoiceDBDevFirebaseConfig);
-	if (env === 'staging') initializeApp(routechoiceDBStagingFirebaseConfig);
-	if (env === 'prod') initializeApp(routechoiceDBProdFirebaseConfig);
-	const db = getFirestore();
-	const runnersRef = collection(db, 'coursesData', eventID, 'runners');
-	const runnersQuery = query(runnersRef);
-	const runnersCollection = await getDocs(runnersQuery);
+type Fetch = typeof fetch;
 
-	const runners: Runner[] = [];
+async function getSplittimesFromRoutechoiceDBDev(
+	eventID: string,
+	fetch: Fetch,
+	env: 'dev' | 'staging' | 'prod'
+): Promise<{
+	runners: Runner[];
+	supermanOverall: number[];
+	leaderOverall: number[];
+}> {
+	const eventResponse = await fetch(`${ROUTECHOICE_DB_DEV_URL}/events/${eventID}`);
 
-	runnersCollection.forEach((doc) => {
-		try {
-			runners.push(runnerValidator.parse({ ...doc.data(), id: doc.id }));
-		} catch (error) {
-			console.error(error);
-		}
-	});
+	if (eventResponse.status === 404) {
+		throw error(404, 'No event for this event id in Routechoice DB.');
+	}
 
-	runners.sort((r1, r2) => {
-		if (r1.rank === null && r2.rank === null) return 0;
-		if (r1.rank === null) return 1;
-		if (r2.rank === null) return -1;
-		return r1.rank - r2.rank;
+	if (!eventResponse.ok) {
+		throw error(500, 'An error occured while fetching the event from Routechoice DB.');
+	}
+
+	// TODO: zod
+	const event: RoutechoiceDbEvent = await eventResponse.json();
+
+	const runners: Runner[] = event.runners.map((runner) => {
+		return {
+			id: runner.id,
+			firstName: runner.firstName,
+			lastName: runner.lastName,
+			rank: runner.rank,
+			startTime: new Date(runner.startTime).getTime(),
+			status: runner.status,
+			trackingDeviceId: null,
+			userId: null,
+			time: runner.time,
+			timeBehind: runner.timeBehind,
+			totalTimeLost: runner.totalTimeLost,
+			track: null,
+			timeOffset: runner.timeOffset,
+			legs: runner.legs.map((runnerLeg) => {
+				if (runnerLeg === null) return null;
+
+				const leg = event.legs.find((l) => l.id === runnerLeg.fkLeg);
+				if (leg === undefined) throw error(500, 'Problem parsing event from Routechoice DB.');
+
+				const startControl = event.controlPoints.find((c) => c.id === leg.fkStartControlPoint);
+				const finishControl = event.controlPoints.find((c) => c.id === leg.fkFinishControlPoint);
+
+				if (startControl === undefined || finishControl === undefined) {
+					throw error(500, 'Problem parsing event from Routechoice DB.');
+				}
+
+				return {
+					startControlCode: startControl.code,
+					finishControlCode: finishControl.code,
+					timeOverall: runnerLeg.timeOverall,
+					time: runnerLeg.time,
+					rankSplit: runnerLeg.rankSplit,
+					timeBehindSplit: runnerLeg.timeBehindSplit,
+					rankOverall: runnerLeg.rankOverall,
+					timeBehindOverall: runnerLeg.timeBehindOverall,
+					timeBehindSuperman: runnerLeg.timeBehindSuperman,
+					isMistake: runnerLeg.timeLoss !== 0,
+					timeLoss: runnerLeg.timeLoss,
+					routeChoiceTimeLoss: runnerLeg.routechoiceTimeLoss,
+					detectedRouteChoice: null,
+					manualRouteChoice: null
+				} as RunnerLeg;
+			})
+		};
 	});
 
 	return {

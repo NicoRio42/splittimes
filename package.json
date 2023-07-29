@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev  --port 5174",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -29,7 +29,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"firebase": "^9.21.0",
 		"linkedom": "^0.14.26",
 		"orienteering-js": "^0.0.15",
 		"zod": "^3.21.4"
