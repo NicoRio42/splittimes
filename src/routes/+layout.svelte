@@ -56,10 +56,23 @@
 		align-items: center;
 		gap: 1rem;
 		font-size: 1.25rem;
+		padding: 0.75rem 0;
 	}
 
 	.brand-logo {
 		width: 1.5rem;
 		height: 1.5rem;
+	}
+
+	@media screen and (max-width: 700px) {
+		.brand {
+			gap: 0.5rem;
+			font-size: 1rem;
+		}
+
+		.brand-logo {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
 	}
 </style>

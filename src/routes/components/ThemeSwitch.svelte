@@ -39,6 +39,13 @@
 		height: 1.25rem;
 	}
 
+	@media screen and (max-width: 700px) {
+		.icon {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+
 	.theme-switch {
 		width: fit-content;
 		background-color: transparent;
