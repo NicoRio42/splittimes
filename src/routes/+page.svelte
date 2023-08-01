@@ -49,7 +49,7 @@
 			<tbody>
 				{#each filteredEvents as event (event.id)}
 					<tr>
-						<td><a href={`/winsplits/${event.id}`}> {event.name} </a></td>
+						<td><a href="/winsplits/{event.id}?date={data.date}"> {event.name} </a></td>
 						<td>{event.type}</td>
 						<td>{event.organiser}</td>
 						<td>{event.country}</td>
