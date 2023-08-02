@@ -2,6 +2,9 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 
+	export let data;
+	data.eventName;
+
 	const baseUrl = `/${$page.params.provider}/${$page.params.eventId}/classes/${$page.params.classId}`;
 	let detailsElement: HTMLDetailsElement;
 
@@ -9,6 +12,12 @@
 </script>
 
 <div>
+	{#if data.eventName !== undefined}
+		<p class="event-link">
+			Event: <a href="/{$page.params.provider}/{$page.params.eventId}">{data.eventName}</a>
+		</p>
+	{/if}
+
 	<details role="list" bind:this={detailsElement}>
 		<summary aria-haspopup="listbox">
 			{#if $page.url.pathname.includes('superman-graph')}
@@ -35,6 +44,11 @@
 <slot />
 
 <style>
+	.event-link {
+		text-align: center;
+		margin: 0;
+	}
+
 	details {
 		margin: 0.25rem;
 	}
