@@ -90,7 +90,7 @@
 			<tr class="selected-runner-row">
 				<td class="sticky-left sticky-bottom selected-runner-td z-index-1">
 					<div class="name-td-content">
-						<a href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')} role="button">
+						<a href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}>
 							{#if compact}
 								{#if selectedRunner !== undefined}
 									{selectedRunner.rank}
