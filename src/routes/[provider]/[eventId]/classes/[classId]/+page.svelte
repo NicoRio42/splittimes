@@ -5,15 +5,49 @@
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
 	import RunnerSelect from './components/RunnerSelect.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
 	let runners: Runner[] = data.runners;
 	let legs: (RunnerLeg | null)[] = data.runners[0].legs;
 	let compact = false;
+	let selectedRunner: Runner | undefined;
 
 	$: showRunnerSelect = $page.url.searchParams.get('showRunnerSelect') !== null;
-	$: selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
+
+	$: {
+		selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
+
+		if (selectedRunner !== undefined && 'localStorage' in globalThis) {
+			localStorage.setItem(
+				'selectedRunner',
+				`${selectedRunner.firstName.trim().toLowerCase()}-${selectedRunner.lastName
+					.trim()
+					.toLowerCase()}`
+			);
+		}
+	}
+
+	onMount(() => {
+		if (selectedRunner !== undefined) return;
+		const selectedRunnerFromLocalStorage = localStorage.getItem('selectedRunner');
+		if (selectedRunnerFromLocalStorage === null) return;
+		const [firstName, lastName] = selectedRunnerFromLocalStorage.split('-');
+
+		const correspondingRunner = runners.find(
+			(r) =>
+				(r.firstName.trim().toLowerCase() === firstName &&
+					r.lastName.trim().toLowerCase() === lastName) ||
+				(r.firstName.trim().toLowerCase() === lastName &&
+					r.lastName.trim().toLowerCase() === firstName)
+		);
+
+		if (correspondingRunner === undefined) return;
+
+		goto(`?selectedRunner=${correspondingRunner.id}`);
+	});
 </script>
 
 {#if showRunnerSelect}
@@ -93,13 +127,17 @@
 						<a href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}>
 							{#if compact}
 								{#if selectedRunner !== undefined}
-									{selectedRunner.rank}
+									{#if selectedRunner.rank}
+										{selectedRunner.rank}
+									{/if}
 									{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
 								{:else}
 									CR
 								{/if}
 							{:else if selectedRunner !== undefined}
-								{selectedRunner.rank}
+								{#if selectedRunner.rank}
+									{selectedRunner.rank}
+								{/if}
 								{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
 							{:else}
 								Select runner
