@@ -53,7 +53,7 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 			classId,
 			'+02:00',
 			0
-		);
+		).map((r, i) => ({ ...r, id: String(i) }));
 
 		return {
 			runners: addRunnerTrackColorIfDontExists(runners),

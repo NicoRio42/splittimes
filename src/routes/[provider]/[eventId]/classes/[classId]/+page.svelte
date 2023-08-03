@@ -1,28 +1,35 @@
 <script lang="ts">
-	import { secondsToPrettyTime } from '$lib/utils.js';
+	import { addSearchParamsToURL, secondsToPrettyTime } from '$lib/utils.js';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
 	import LegCell from './components/LegCell.svelte';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
+	import RunnerSelect from './components/RunnerSelect.svelte';
+	import { page } from '$app/stores';
 
 	export let data;
 
 	let runners: Runner[] = data.runners;
-	let selectedRunner = runners[0];
-	let legs: (RunnerLeg | null)[] = selectedRunner !== undefined ? selectedRunner.legs : [];
+	let legs: (RunnerLeg | null)[] = data.runners[0].legs;
 	let compact = false;
+
+	$: showRunnerSelect = $page.url.searchParams.get('showRunnerSelect') !== null;
+	$: selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
 </script>
+
+{#if showRunnerSelect}
+	<RunnerSelect runners={data.runners} />
+{/if}
 
 <figure class="wrapper">
 	<table role="grid">
 		<thead>
 			<tr>
-				<th class="sticky-top sticky-left compact-toggle name-th">
+				<th class="sticky-top sticky-left compact-toggle name-th z-index-1">
 					<EnlargeToggle bind:compact />
-					<!-- <input type="checkbox" id="compact-checkbox" /> -->
 				</th>
 
 				{#each legs as _, index}
-					<th class="sticky-top center">
+					<th class="sticky-top center z-index-1">
 						{#if index === legs.length - 1}
 							Finish
 						{:else}
@@ -36,7 +43,7 @@
 		<tbody>
 			{#each runners as runner (runner.id)}
 				<tr>
-					<td class="sticky-left">
+					<td class="sticky-left z-index-1">
 						<div class="name-td-content">
 							{#if runner.rank}
 								{runner.rank}
@@ -80,58 +87,42 @@
 				</tr>
 			{/each}
 
-			{#if selectedRunner !== undefined}
-				<tr class="selected-runner-row">
-					<td class="sticky-left sticky-bottom selected-runner-td">
-						<div class="name-td-content">
-							{#if selectedRunner.rank}
-								{selectedRunner.rank}
-							{/if}
-
+			<tr class="selected-runner-row">
+				<td class="sticky-left sticky-bottom selected-runner-td z-index-1">
+					<div class="name-td-content">
+						<a href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')} role="button">
 							{#if compact}
-								{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
+								{#if selectedRunner !== undefined}
+									{selectedRunner.rank}
+									{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
+								{:else}
+									CR
+								{/if}
+							{:else if selectedRunner !== undefined}
+								{selectedRunner.rank}
+								{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
 							{:else}
-								<select class="selected-runner" bind:value={selectedRunner}>
-									{#each runners as runner (runner.id)}
-										<option value={runner}>
-											{#if compact}
-												{runner.firstName?.at(0)}{runner.lastName?.at(0)}
-											{:else}
-												{runner.firstName?.at(0)}.{runner.lastName}
-											{/if}
-										</option>
-									{/each}
-								</select>
+								Select runner
 							{/if}
-						</div>
-					</td>
+						</a>
+					</div>
+				</td>
 
+				{#if selectedRunner !== undefined}
 					{#each selectedRunner.legs as runnerLeg}
 						<LegCell {runnerLeg} stickyBottom={true} />
 					{/each}
-				</tr>
-			{/if}
+				{:else}
+					{#each legs as _}
+						<td class="sticky-bottom thick-border-top">--</td>
+					{/each}
+				{/if}
+			</tr>
 		</tbody>
 	</table>
 </figure>
 
 <style>
-	/* table:has(#compact-checkbox:checked) .compact {
-		display: block;
-	}
-
-	table:has(#compact-checkbox:checked) .large {
-		display: none;
-	}
-
-	table:has(#compact-checkbox:not(:checked)) .compact {
-		display: none;
-	}
-
-	table:has(#compact-checkbox:not(:checked)) .large {
-		display: block;
-	} */
-
 	.wrapper {
 		flex-basis: 0;
 		flex-shrink: 0;
@@ -140,14 +131,12 @@
 		position: relative;
 	}
 
-	table,
-	.selected-runner {
+	table {
 		font-size: 1rem;
 	}
 
 	@media (max-width: 768px) {
-		table,
-		.selected-runner {
+		table {
 			font-size: 0.875rem;
 		}
 	}
@@ -172,6 +161,9 @@
 	.sticky-bottom {
 		position: sticky;
 		background-color: var(--background-color);
+	}
+
+	.z-index-1 {
 		z-index: 1;
 	}
 
@@ -192,12 +184,6 @@
 		white-space: nowrap;
 	}
 
-	.selected-runner {
-		margin: 0;
-		padding: 0.25rem 1rem 0.25rem 0.25rem;
-		background-position: center right 0;
-	}
-
 	.compact-toggle {
 		z-index: 2;
 	}
@@ -209,7 +195,11 @@
 
 	.selected-runner-td {
 		border-top: 0.1875rem solid var(--table-border-color);
-		padding-left: 0.125rem;
+		padding-left: 0.5rem;
 		padding-right: 0.125rem;
+	}
+
+	.thick-border-top {
+		border-top: 0.1875rem solid var(--table-border-color);
 	}
 </style>
