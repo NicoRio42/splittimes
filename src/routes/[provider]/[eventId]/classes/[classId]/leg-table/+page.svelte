@@ -137,7 +137,7 @@
 
 			<tr class="selected-runner-row">
 				<td class="sticky-bottom selected-runner-td z-index-1">
-					{selectedRunner?.legs[legNumber - 1]?.rankSplit}
+					{selectedRunner?.legs[legNumber - 1]?.rankSplit ?? ''}
 				</td>
 
 				<td class="sticky-bottom selected-runner-td z-index-1">
@@ -180,7 +180,9 @@
 			goto(addSearchParamsToURL($page.url, 'legNumber', String(e.currentTarget.value)))}
 	>
 		{#each runners[0].legs as leg, index}
-			<option value={index + 1}> {index + 1} </option>
+			<option value={index + 1}>
+				{index + 1 === runners[0].legs.length ? 'Finish' : index + 1}
+			</option>
 		{/each}
 	</select>
 
@@ -205,8 +207,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 2rem;
-		margin: 1rem 0;
+		gap: 1.5rem;
+		margin: 0.5rem 0;
 		padding: 0;
 	}
 
@@ -221,6 +223,7 @@
 		align-items: center;
 		width: 3rem;
 		height: 3rem;
+		border-radius: 99rem;
 	}
 
 	.wrapper {
@@ -230,10 +233,12 @@
 		margin: 0 auto;
 		position: relative;
 		width: 768px;
+		overflow-x: hidden;
 	}
 
 	table {
 		font-size: 1rem;
+		width: 100%;
 	}
 
 	@media (max-width: 768px) {
