@@ -24,6 +24,8 @@
 				Superman graph
 			{:else if $page.url.pathname.includes('leader-graph')}
 				Leader graph
+			{:else if $page.url.pathname.includes('leg-table')}
+				Leg table
 			{:else}
 				Table
 			{/if}
@@ -31,7 +33,11 @@
 
 		<ul role="listbox">
 			<li>
-				<a href="{baseUrl}{$page.url.search}"> Table </a>
+				<a href="{baseUrl}/table{$page.url.search}"> Table </a>
+			</li>
+
+			<li>
+				<a href="{baseUrl}/leg-table{$page.url.search}"> Leg Table </a>
 			</li>
 
 			<li><a href="{baseUrl}/superman-graph{$page.url.search}">Superman graph</a></li>

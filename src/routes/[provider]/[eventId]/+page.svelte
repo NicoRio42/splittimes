@@ -11,8 +11,8 @@
 		{#each data.classes as splitClass (splitClass.id)}
 			<li>
 				<a
-					href="/{$page.params.provider}/{$page.params.eventId}/classes/{splitClass.id}{$page.url
-						.search}"
+					href="/{$page.params.provider}/{$page.params.eventId}/classes/{splitClass.id}/table{$page
+						.url.search}"
 				>
 					{splitClass.name}
 				</a>

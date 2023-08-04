@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { addSearchParamsToURL, secondsToPrettyTime } from '$lib/utils.js';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
-	import LegCell from './components/LegCell.svelte';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
-	import RunnerSelect from './components/RunnerSelect.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import RunnerSelect from '../components/RunnerSelect.svelte';
 	import { goto } from '$app/navigation';
+	import LegCell from '../components/LegCell.svelte';
 
 	export let data;
 
@@ -64,11 +64,18 @@
 
 				{#each legs as _, index}
 					<th class="sticky-top center z-index-1">
-						{#if index === legs.length - 1}
-							Finish
-						{:else}
-							{index + 1}
-						{/if}
+						<a
+							href="/{$page.params.provider}/{$page.params.eventId}/classes/{$page.params
+								.classId}/leg-table?legNumber={index + 1}{selectedRunner !== undefined
+								? `&selectedRunner=${selectedRunner.id}`
+								: ''}"
+						>
+							{#if index === legs.length - 1}
+								Finish
+							{:else}
+								{index + 1}
+							{/if}
+						</a>
 					</th>
 				{/each}
 			</tr>
