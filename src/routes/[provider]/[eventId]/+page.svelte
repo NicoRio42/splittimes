@@ -13,7 +13,6 @@
 				<a
 					href="/{$page.params.provider}/{$page.params.eventId}/classes/{splitClass.id}{$page.url
 						.search}"
-					data-sveltekit-reload
 				>
 					{splitClass.name}
 				</a>
