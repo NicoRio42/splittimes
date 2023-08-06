@@ -122,8 +122,8 @@
 						</div>
 					</td>
 
-					{#each runner.legs as runnerLeg}
-						<LegCell {runnerLeg} />
+					{#each runner.legs as runnerLeg, index}
+						<LegCell {runnerLeg} isLastSplit={index === runner.legs.length - 1} />
 					{/each}
 				</tr>
 			{/each}
@@ -154,8 +154,12 @@
 				</td>
 
 				{#if selectedRunner !== undefined}
-					{#each selectedRunner.legs as runnerLeg}
-						<LegCell {runnerLeg} stickyBottom={true} />
+					{#each selectedRunner.legs as runnerLeg, index}
+						<LegCell
+							{runnerLeg}
+							stickyBottom={true}
+							isLastSplit={index === selectedRunner.legs.length - 1}
+						/>
 					{/each}
 				{:else}
 					{#each legs as _}

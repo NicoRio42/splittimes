@@ -14,7 +14,9 @@ export async function load({
 	url: { searchParams }
 }) {
 	if (provider === ProvidersEnum.WINSPLIT) {
-		const response = await fetch(`${TWO_D_RERUN_URL}?id=${eventId}&classid=${classId}`);
+		const url = `${TWO_D_RERUN_URL}?id=${eventId}&classid=${classId}`;
+		// const url = "/offline.xml";
+		const response = await fetch(url);
 		const splittimesText = await response.text();
 		return getSplitTimesFromIOFXMLFile(splittimesText, classId);
 	}

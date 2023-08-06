@@ -1,22 +1,18 @@
 <script lang="ts">
 	import type { RunnerLeg } from 'orienteering-js/models';
 	import { rankToCSSClass, secondsToPrettyTime } from '$lib/utils.js';
+	import TimeRank from './TimeRank.svelte';
 
 	export let runnerLeg: RunnerLeg | null;
 	export let stickyBottom = false;
+	export let isLastSplit = false;
 </script>
 
 <td class:mistake={runnerLeg?.isMistake} class:stickyBottom>
 	{#if runnerLeg}
-		<div class="nowrap tooltip-container {rankToCSSClass(runnerLeg.rankSplit)}">
+		<div class="nowrap tooltip-container">
 			{#if runnerLeg?.time}
-				{secondsToPrettyTime(runnerLeg.time)}
-			{/if}
-
-			{#if runnerLeg?.rankSplit}
-				<small>
-					({runnerLeg.rankSplit})
-				</small>
+				<TimeRank time={runnerLeg.time} rank={runnerLeg?.rankSplit} {isLastSplit} />
 			{/if}
 
 			{#if runnerLeg.timeBehindSplit || runnerLeg.timeLoss}
@@ -36,15 +32,9 @@
 			{/if}
 		</div>
 
-		<div class="nowrap tooltip-container {rankToCSSClass(runnerLeg.rankOverall)}">
+		<div class="nowrap tooltip-container">
 			{#if runnerLeg?.timeOverall}
-				{secondsToPrettyTime(runnerLeg.timeOverall)}
-			{/if}
-
-			{#if runnerLeg?.rankOverall}
-				<small>
-					({runnerLeg.rankOverall})
-				</small>
+				<TimeRank time={runnerLeg.timeOverall} rank={runnerLeg?.rankOverall} />
 			{/if}
 
 			{#if runnerLeg.timeBehindOverall}
@@ -59,18 +49,6 @@
 <style>
 	.nowrap {
 		white-space: nowrap;
-	}
-
-	.first {
-		color: #f44336;
-	}
-
-	.second {
-		color: #4caf50;
-	}
-
-	.third {
-		color: #2196f3;
 	}
 
 	:global(table tr) td.mistake {
