@@ -22,12 +22,17 @@ export function getDateFromSearchParams(searchParams: URLSearchParams): string {
 
 export const secondsToPrettyTime = (seconds: number) => {
 	// Convert seconds in number format to string in HH:MM:SS string format
-	let hours = Math.trunc(seconds / 3600);
+	const hours = Math.trunc(seconds / 3600);
 	let remainingSeconds = seconds % 3600;
-	let minutes = Math.trunc(remainingSeconds / 60);
+	const minutes = Math.trunc(remainingSeconds / 60);
 	remainingSeconds = remainingSeconds % 60;
+
 	if (hours === 0 && minutes === 0) {
-		return String(remainingSeconds);
+		if (remainingSeconds < 10) {
+			return '0:0' + String(remainingSeconds);
+		} else {
+			return '0:' + String(remainingSeconds);
+		}
 	} else if (hours === 0) {
 		if (remainingSeconds < 10) {
 			return String(minutes) + ':0' + String(remainingSeconds);

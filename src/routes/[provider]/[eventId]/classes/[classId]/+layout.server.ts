@@ -49,6 +49,7 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 		const xmlDoc = parser.parseFromString(iofXmlFile, 'text/xml');
 
 		const eventName: string = xmlDoc.querySelector("Event Name")?.textContent?.trim() ?? "Classes"
+		const className: string = xmlDoc.querySelector("ClassResult Class Name")?.textContent?.trim() ?? "Classes"
 
 		const runners = parseIOFXML3SplitTimesFile(
 			xmlDoc as unknown as XMLDocument,
@@ -61,7 +62,8 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 			runners: addRunnerTrackColorIfDontExists(runners),
 			supermanOverall: getSupermanOverallTimes(runners),
 			leaderOverall: getLeaderOverallTimes(runners),
-			eventName
+			eventName,
+			className
 		};
 	} catch (e) {
 		console.error(e);
@@ -80,6 +82,7 @@ async function getSplittimesFromRoutechoiceDBDev(
 	supermanOverall: number[];
 	leaderOverall: number[];
 	eventName: string | undefined;
+	className: string | undefined;
 }> {
 	const eventResponse = await fetch(`${ROUTECHOICE_DB_DEV_URL}/events/${eventID}`);
 
@@ -146,7 +149,8 @@ async function getSplittimesFromRoutechoiceDBDev(
 		runners: addRunnerTrackColorIfDontExists(runners),
 		supermanOverall: getSupermanOverallTimes(runners),
 		leaderOverall: getLeaderOverallTimes(runners),
-		eventName: undefined
+		eventName: undefined,
+		className: undefined
 	};
 }
 

@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 
 	export let data;
-	data.eventName;
 
 	const baseUrl = `/${$page.params.provider}/${$page.params.eventId}/classes/${$page.params.classId}`;
 	let detailsElement: HTMLDetailsElement;
@@ -14,12 +13,16 @@
 <div>
 	{#if data.eventName !== undefined}
 		<p class="event-link">
-			Event: <a href="/{$page.params.provider}/{$page.params.eventId}">{data.eventName}</a>
+			Event: <a href="/{$page.params.provider}/{$page.params.eventId}">{data.eventName}</a> -
+			<a
+				href="/{$page.params.provider}/{$page.params.eventId}/classes/${$page.params.classId}/table"
+				>{data.className}</a
+			>
 		</p>
 	{/if}
 
 	<details role="list" bind:this={detailsElement}>
-		<summary aria-haspopup="listbox">
+		<summary aria-haspopup="listbox" class="mode-select-summary">
 			{#if $page.url.pathname.includes('superman-graph')}
 				Superman graph
 			{:else if $page.url.pathname.includes('leader-graph')}
@@ -65,5 +68,11 @@
 			margin-left: auto;
 			margin-right: auto;
 		}
+	}
+
+	details summary.mode-select-summary {
+		padding-top: 0.3825rem;
+		padding-bottom: 0.5rem;
+		height: 2.5rem;
 	}
 </style>

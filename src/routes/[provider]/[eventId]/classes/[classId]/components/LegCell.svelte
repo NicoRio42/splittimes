@@ -6,9 +6,20 @@
 	export let runnerLeg: RunnerLeg | null;
 	export let stickyBottom = false;
 	export let isLastSplit = false;
+
+	function computeMistakeOpacity() {
+		if (runnerLeg === null || runnerLeg.timeLoss === 0) return '0%';
+		if (runnerLeg.timeLoss > 60) return '100%';
+		if (runnerLeg.timeLoss < 20) return '20%';
+		return `${(runnerLeg.timeLoss * 100) / 60}%`;
+	}
 </script>
 
-<td class:mistake={runnerLeg?.isMistake} class:stickyBottom>
+<td
+	style:--mistake-opacity={computeMistakeOpacity()}
+	class:mistake={runnerLeg?.isMistake}
+	class:stickyBottom
+>
 	{#if runnerLeg}
 		<div class="nowrap tooltip-container">
 			{#if runnerLeg?.time}
@@ -52,21 +63,21 @@
 	}
 
 	:global(table tr) td.mistake {
-		background-color: #dc8a8a;
+		background-color: hsl(0, 54%, 70%, var(--mistake-opacity));
 	}
 
 	@media (prefers-color-scheme: dark) {
 		:global(table tr) td.mistake {
-			background-color: #8c3b3b;
+			background-color: hsl(0, 41%, 39%, var(--mistake-opacity));
 		}
 	}
 
 	:global(html[data-theme='light'] table tr) td.mistake {
-		background-color: #dc8a8a;
+		background-color: hsl(0, 54%, 70%, var(--mistake-opacity));
 	}
 
 	:global(html[data-theme='dark'] table tr) td.mistake {
-		background-color: #8c3b3b;
+		background-color: hsl(0, 41%, 39%, var(--mistake-opacity));
 	}
 
 	.stickyBottom {
