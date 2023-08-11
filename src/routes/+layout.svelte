@@ -1,5 +1,6 @@
 <script lang="ts">
 	import './global.css';
+	import 'uno.css';
 	import ThemeSwitch from './components/ThemeSwitch.svelte';
 	import { navigating } from '$app/stores';
 </script>

@@ -129,9 +129,14 @@
 			{/each}
 
 			<tr class="selected-runner-row">
-				<td class="sticky-left sticky-bottom selected-runner-td z-index-1">
+				<td class="sticky-left sticky-bottom selected-runner-td z-index-1 px1">
 					<div class="name-td-content">
-						<a href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}>
+						<a
+							href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
+							role="button"
+							class:important:gap-1={compact}
+							class="outline flex gap-2 items-center py0 px1"
+						>
 							{#if compact}
 								{#if selectedRunner !== undefined}
 									{#if selectedRunner.rank}
@@ -145,10 +150,21 @@
 								{#if selectedRunner.rank}
 									{selectedRunner.rank}
 								{/if}
-								{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
+
+								<div class="nowrap">
+									{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
+
+									{#if selectedRunner.time}
+										<div class="text-left">
+											{secondsToPrettyTime(selectedRunner.time)}
+										</div>
+									{/if}
+								</div>
 							{:else}
-								Select runner
+								<span class="nowrap m2">Select runner</span>
 							{/if}
+
+							<i class="i-carbon-chevron-down block h5 w5" />
 						</a>
 					</div>
 				</td>
@@ -244,8 +260,6 @@
 
 	.selected-runner-td {
 		border-top: 0.1875rem solid var(--table-border-color);
-		padding-left: 0.5rem;
-		padding-right: 0.125rem;
 	}
 
 	.thick-border-top {
