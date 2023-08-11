@@ -25,11 +25,11 @@
 </script>
 
 <dialog open>
-	<article>
+	<article class="relative">
 		<a
 			href={closeUrl === '' ? $page.url.pathname : closeUrl}
 			aria-label="Close"
-			class="close"
+			class="close absolute top-10 right-4 m-0"
 			data-sveltekit-replacestate
 		/>
 
@@ -54,7 +54,7 @@
 <style>
 	article {
 		padding: 2rem;
-		height: calc(100vh - var(--spacing) * 2);
+		height: calc(90vh - var(--spacing) * 2);
 	}
 
 	ul li {
