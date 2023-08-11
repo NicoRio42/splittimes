@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { RunnerLeg } from 'orienteering-js/models';
-	import { rankToCSSClass, secondsToPrettyTime } from '$lib/utils.js';
+	import { secondsToPrettyTime } from '$lib/utils.js';
 	import TimeRank from './TimeRank.svelte';
 
 	export let runnerLeg: RunnerLeg | null;
@@ -63,21 +63,37 @@
 	}
 
 	:global(table tr) td.mistake {
-		background-color: hsl(0, 54%, 70%, var(--mistake-opacity));
+		background-color: color-mix(
+			in srgb,
+			hsl(0, 54%, 70%) var(--mistake-opacity),
+			var(--background-color)
+		);
 	}
 
 	@media (prefers-color-scheme: dark) {
 		:global(table tr) td.mistake {
-			background-color: hsl(0, 41%, 39%, var(--mistake-opacity));
+			background-color: color-mix(
+				in srgb,
+				hsl(0, 41%, 39%) var(--mistake-opacity),
+				var(--background-color)
+			);
 		}
 	}
 
 	:global(html[data-theme='light'] table tr) td.mistake {
-		background-color: hsl(0, 54%, 70%, var(--mistake-opacity));
+		background-color: color-mix(
+			in srgb,
+			hsl(0, 54%, 70%) var(--mistake-opacity),
+			var(--background-color)
+		);
 	}
 
 	:global(html[data-theme='dark'] table tr) td.mistake {
-		background-color: hsl(0, 41%, 39%, var(--mistake-opacity));
+		background-color: color-mix(
+			in srgb,
+			hsl(0, 41%, 39%) var(--mistake-opacity),
+			var(--background-color)
+		);
 	}
 
 	.stickyBottom {

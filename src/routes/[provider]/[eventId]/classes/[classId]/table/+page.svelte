@@ -128,7 +128,7 @@
 				</tr>
 			{/each}
 
-			<tr class="selected-runner-row">
+			<tr class="relative">
 				<td class="sticky-left sticky-bottom selected-runner-td z-index-1 px1">
 					<div class="name-td-content">
 						<a

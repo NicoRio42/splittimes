@@ -45,18 +45,6 @@ export const secondsToPrettyTime = (seconds: number) => {
 	return String(hours) + ':' + String(minutes) + ':' + String(remainingSeconds);
 };
 
-export const rankToCSSClass = (rank: number) => {
-	if (rank === 1) {
-		return 'first';
-	} else if (rank === 2) {
-		return 'second';
-	} else if (rank === 3) {
-		return 'third';
-	}
-
-	return '';
-};
-
 export function addAlpha(color: string, opacity: number) {
 	if (!color.startsWith('#')) throw new Error('Hexadecimal color should start with #');
 	if (color.length !== 7 && color.length !== 9)
