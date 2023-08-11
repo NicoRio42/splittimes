@@ -6,6 +6,7 @@
 	export let runnerLeg: RunnerLeg | null;
 	export let stickyBottom = false;
 	export let isLastSplit = false;
+	console.log('toto');
 
 	function computeMistakeOpacity() {
 		if (runnerLeg === null || runnerLeg.timeLoss === 0) return '0%';
