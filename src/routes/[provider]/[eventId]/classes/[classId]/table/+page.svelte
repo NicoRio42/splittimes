@@ -134,24 +134,25 @@
 						<a
 							href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
 							role="button"
-							class:important:gap-1={compact}
-							class="outline flex gap-2 items-center py0 px1"
+							class="outline flex gap-1 items-center py0 px1 text-3.5 w-100%"
 						>
 							{#if compact}
-								{#if selectedRunner !== undefined}
-									{#if selectedRunner.rank}
-										{selectedRunner.rank}
+								<span class="my-2 nowrap">
+									{#if selectedRunner !== undefined}
+										{#if selectedRunner.rank}
+											{selectedRunner.rank}
+										{/if}
+										{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
+									{:else}
+										SR
 									{/if}
-									{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
-								{:else}
-									CR
-								{/if}
+								</span>
 							{:else if selectedRunner !== undefined}
 								{#if selectedRunner.rank}
 									{selectedRunner.rank}
 								{/if}
 
-								<div class="nowrap">
+								<div class="nowrap ml-1">
 									{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
 
 									{#if selectedRunner.time}
@@ -161,10 +162,10 @@
 									{/if}
 								</div>
 							{:else}
-								<span class="nowrap m2">Select runner</span>
+								<span class="nowrap my2">Select runner</span>
 							{/if}
 
-							<i class="i-carbon-chevron-down block h5 w5" />
+							<i class="i-carbon-chevron-down block h4 w4 ml-auto" />
 						</a>
 					</div>
 				</td>

@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { deleteSearchParamsToURL } from '$lib/utils.js';
 	import type { Runner } from 'orienteering-js/models';
+	import { slide } from 'svelte/transition';
 
 	export let runners: Runner[];
 
@@ -25,7 +26,7 @@
 </script>
 
 <dialog open>
-	<article class="relative">
+	<article class="relative" transition:slide>
 		<a
 			href={closeUrl === '' ? $page.url.pathname : closeUrl}
 			aria-label="Close"
