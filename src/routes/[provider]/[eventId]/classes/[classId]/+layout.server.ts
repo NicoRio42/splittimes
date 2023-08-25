@@ -1,4 +1,8 @@
-import { ROUTECHOICE_DB_DEV_URL, TWO_D_RERUN_URL } from '$lib/constants.js';
+import {
+	ROUTECHOICE_DB_DEV_URL,
+	ROUTECHOICE_DB_PROD_URL,
+	TWO_D_RERUN_URL
+} from '$lib/constants.js';
 import { ProvidersEnum } from '$lib/models/enums/providers.enum.js';
 import type { RoutechoiceDbEvent } from '$lib/models/routechoice-db/event.model.js';
 import type { RoutechoiceDbLeg } from '$lib/models/routechoice-db/leg.model.js';
@@ -24,9 +28,6 @@ export async function load({
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_DEV)
 		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'dev');
 
-	if (provider === ProvidersEnum.ROUTECHOICE_DB_STAGING)
-		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'staging');
-
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
 		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'prod');
 
@@ -48,8 +49,9 @@ async function getSplitTimesFromIOFXMLFile(iofXmlFile: string, classId: string) 
 	try {
 		const xmlDoc = parser.parseFromString(iofXmlFile, 'text/xml');
 
-		const eventName: string = xmlDoc.querySelector("Event Name")?.textContent?.trim() ?? "Classes"
-		const className: string = xmlDoc.querySelector("ClassResult Class Name")?.textContent?.trim() ?? "Classes"
+		const eventName: string = xmlDoc.querySelector('Event Name')?.textContent?.trim() ?? 'Classes';
+		const className: string =
+			xmlDoc.querySelector('ClassResult Class Name')?.textContent?.trim() ?? 'Classes';
 
 		const runners = parseIOFXML3SplitTimesFile(
 			xmlDoc as unknown as XMLDocument,
@@ -76,7 +78,7 @@ type Fetch = typeof fetch;
 async function getSplittimesFromRoutechoiceDBDev(
 	eventID: string,
 	fetch: Fetch,
-	env: 'dev' | 'staging' | 'prod'
+	env: 'dev' | 'prod'
 ): Promise<{
 	runners: Runner[];
 	supermanOverall: number[];
@@ -84,7 +86,9 @@ async function getSplittimesFromRoutechoiceDBDev(
 	eventName: string | undefined;
 	className: string | undefined;
 }> {
-	const eventResponse = await fetch(`${ROUTECHOICE_DB_DEV_URL}/events/${eventID}`);
+	const eventResponse = await fetch(
+		`${env === 'dev' ? ROUTECHOICE_DB_DEV_URL : ROUTECHOICE_DB_PROD_URL}/events/${eventID}`
+	);
 
 	if (eventResponse.status === 404) {
 		throw error(404, 'No event for this event id in Routechoice DB.');
