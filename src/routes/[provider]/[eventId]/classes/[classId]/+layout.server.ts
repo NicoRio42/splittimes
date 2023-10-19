@@ -5,18 +5,13 @@ import {
 } from '$lib/constants.js';
 import { ProvidersEnum } from '$lib/models/enums/providers.enum.js';
 import type { RoutechoiceDbEvent } from '$lib/models/routechoice-db/event.model.js';
-import type { RoutechoiceDbLeg } from '$lib/models/routechoice-db/leg.model.js';
 import { error } from '@sveltejs/kit';
 import { DOMParser } from 'linkedom';
 import type { Runner, RunnerLeg } from 'orienteering-js/models';
 import { routesColors } from 'orienteering-js/ocad';
 import { parseIOFXML3SplitTimesFile } from 'orienteering-js/split-times';
 
-export async function load({
-	fetch,
-	params: { provider, eventId, classId },
-	url: { searchParams }
-}) {
+export async function load({ fetch, params: { provider, eventId, classId } }) {
 	if (provider === ProvidersEnum.WINSPLIT) {
 		const url = `${TWO_D_RERUN_URL}?id=${eventId}&classid=${classId}`;
 		// const url = "/offline.xml";
@@ -31,14 +26,14 @@ export async function load({
 	if (provider === ProvidersEnum.ROUTECHOICE_DB_PROD)
 		return getSplittimesFromRoutechoiceDBDev(eventId, fetch, 'prod');
 
-	if (provider === ProvidersEnum.FILE_URL) {
-		const fileUrl = searchParams.get('file-url');
-		if (fileUrl === null) throw error(403);
-		const decodedFileUrl = decodeURI(fileUrl);
-		const response = await fetch(`${decodedFileUrl}/${classId}.xml`);
-		const splittimesText = await response.text();
-		return getSplitTimesFromIOFXMLFile(splittimesText, classId);
-	}
+	// if (provider === ProvidersEnum.FILE_URL) {
+	// 	const fileUrl = searchParams.get('file-url');
+	// 	if (fileUrl === null) throw error(403);
+	// 	const decodedFileUrl = decodeURI(fileUrl);
+	// 	const response = await fetch(`${decodedFileUrl}/${classId}.xml`);
+	// 	const splittimesText = await response.text();
+	// 	return getSplitTimesFromIOFXMLFile(splittimesText, classId);
+	// }
 
 	throw error(404);
 }
