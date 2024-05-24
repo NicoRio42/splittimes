@@ -269,7 +269,7 @@
 	.sticky-top,
 	.sticky-bottom {
 		position: sticky;
-		background-color: var(--background-color);
+		background-color: var(--pico-background-color);
 	}
 
 	.z-index-1 {
@@ -294,12 +294,12 @@
 	}
 
 	.selected-runner-td {
-		border-top: 0.1875rem solid var(--table-border-color);
+		border-top: 0.1875rem solid var(--pico-table-border-color);
 		padding-left: 0.5rem;
 		padding-right: 0.125rem;
 	}
 
 	.thick-border-top {
-		border-top: 0.1875rem solid var(--table-border-color);
+		border-top: 0.1875rem solid var(--pico-table-border-color);
 	}
 </style>

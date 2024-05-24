@@ -33,7 +33,9 @@ body {
 	border-radius: 4px;
 	visibility: hidden;
 	opacity: 0;
-	transition: visibility 0s, opacity 0.25s linear;
+	transition:
+		visibility 0s,
+		opacity 0.25s linear;
 }
 
 .tooltip-right {
@@ -49,4 +51,9 @@ body {
 
 td {
 	padding: 0.3125rem 0.5rem;
+}
+
+button.outline,
+[role='button'].outline {
+	outline-style: none;
 }

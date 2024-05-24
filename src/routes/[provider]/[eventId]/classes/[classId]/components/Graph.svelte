@@ -22,7 +22,7 @@
 			? 0
 			: Math.max(
 					...selectedRunners.flatMap((r) => r.legs.map((l) => (l === null ? 0 : l[runnerLegKey])))
-			  );
+				);
 </script>
 
 <svelte:window
@@ -31,7 +31,7 @@
 	}}
 />
 
-<figure>
+<figure class="overflow-auto">
 	<form>
 		<p class="header">
 			<small>
@@ -52,9 +52,9 @@
 						type="checkbox"
 						value={runner}
 						bind:group={selectedRunners}
-						style:--border-color={runner.track?.color}
-						style:--primary={runner.track?.color}
-						style:--form-element-focus-color={addAlpha(runner.track?.color ?? '#FFFFFF', 0.13)}
+						style:--pico-border-color={runner.track?.color}
+						style:--pico-primary-background={runner.track?.color}
+						style:--pico-form-element-focus-color={addAlpha(runner.track?.color ?? '#FFFFFF', 0.13)}
 					/>
 				</small>
 
@@ -68,6 +68,7 @@
 	</form>
 
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
 		class="svg-wrapper"
 		on:click={(e) => {
@@ -87,7 +88,7 @@
 		<svg height="100%" width="100%" preserveAspectRatio="none" viewBox="0 0 {maxX} {maxY}">
 			{#each supermanOrLeader as leg, index (index)}
 				<Polyline
-					color="var(--table-border-color)"
+					color="var(--pico-table-border-color)"
 					points={[
 						[leg, 0],
 						[leg, maxY]
@@ -126,6 +127,7 @@
 				return leg1[key] - leg2[key];
 			})}
 
+			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 			<article
 				class="leg-panel"
 				style:left={hoveredLegIndex < supermanOrLeader.length / 2
@@ -136,12 +138,13 @@
 					: 'unset'}
 				on:click|stopPropagation
 			>
-				<p class="leg-panel-head">
+				<p class="leg-panel-head" bg-pico-card-background-color>
 					Leg: {hoveredLegIndex + 1}
 
 					<button
 						type="button"
 						class="raw-btn close-button"
+						text-pico-h1-color
 						on:click={() => (displayPanel = false)}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
@@ -227,7 +230,6 @@
 		margin: 0;
 		padding: 0.5rem 0;
 		position: sticky;
-		background-color: var(--card-background-color);
 		top: 0;
 		display: flex;
 		justify-content: space-between;
@@ -240,7 +242,6 @@
 		border: none;
 		margin: 0;
 		padding: 0;
-		color: var(--h1-color);
 		display: flex;
 		justify-content: center;
 		align-items: center;

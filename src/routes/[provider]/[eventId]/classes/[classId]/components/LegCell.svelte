@@ -99,7 +99,7 @@
 	.stickyBottom {
 		position: sticky;
 		bottom: 0;
-		background-color: var(--background-color);
-		border-top: 0.1875rem solid var(--table-border-color);
+		background-color: var(--pico-background-color);
+		border-top: 0.1875rem solid var(--pico-table-border-color);
 	}
 </style>

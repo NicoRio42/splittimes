@@ -2,7 +2,12 @@
 	export let compact: boolean;
 </script>
 
-<button type="button" class="compact-button" on:click={() => (compact = !compact)}>
+<button
+	type="button"
+	class="compact-button"
+	text-pico-h1-color
+	on:click={() => (compact = !compact)}
+>
 	{#if compact}
 		<svg class="enlarge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
 			><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
@@ -34,7 +39,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		color: var(--h1-color);
 	}
 
 	.shrink {

@@ -1,6 +1,11 @@
 <script lang="ts">
+	import '@picocss/pico/css/pico.css';
+	// Prevent css import reordering
 	import './global.css';
+	// Prevent css import reordering
 	import 'uno.css';
+	// Prevent css import reordering
+
 	import ThemeSwitch from './components/ThemeSwitch.svelte';
 	import { navigating } from '$app/stores';
 </script>
@@ -14,7 +19,7 @@
 		<progress />
 	{/if}
 
-	<nav class="container-fluid nav">
+	<nav class="container-fluid nav" items-center border-b="2 solid pico-table-border-color">
 		<ul>
 			<li class="brand">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="brand-logo">
@@ -45,11 +50,6 @@
 		position: fixed;
 		height: 0.25rem;
 		border-radius: 0;
-	}
-
-	.nav {
-		align-items: center;
-		border-bottom: 0.125rem solid var(--table-border-color);
 	}
 
 	.brand {

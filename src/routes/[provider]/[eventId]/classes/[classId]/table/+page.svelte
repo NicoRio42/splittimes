@@ -54,7 +54,7 @@
 	<RunnerSelect runners={data.runners} />
 {/if}
 
-<figure class="wrapper">
+<figure class="wrapper overflow-auto">
 	<table role="grid">
 		<thead>
 			<tr>
@@ -129,29 +129,32 @@
 			{/each}
 
 			<tr class="relative">
-				<td class="sticky-left sticky-bottom selected-runner-td z-index-1 px1">
-					<div class="name-td-content">
-						<a
-							href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
-							role="button"
-							class="outline flex gap-1 items-center py0 px1 text-3.5 w-100%"
-						>
+				<td class="sticky-left sticky-bottom selected-runner-td" z-1 px-1>
+					<a
+						href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
+						role="button"
+						class="outline !flex !w-full"
+						items-center
+						justify-between
+						py0
+						px1
+						text-3.5
+						min-h-10
+					>
+						{#if selectedRunner?.rank}
+							{selectedRunner.rank}
+						{/if}
+
+						<div grow text-left>
 							{#if compact}
 								<span class="my-2 nowrap">
 									{#if selectedRunner !== undefined}
-										{#if selectedRunner.rank}
-											{selectedRunner.rank}
-										{/if}
 										{selectedRunner.firstName?.at(0)}{selectedRunner.lastName?.at(0)}
 									{:else}
 										SR
 									{/if}
 								</span>
 							{:else if selectedRunner !== undefined}
-								{#if selectedRunner.rank}
-									{selectedRunner.rank}
-								{/if}
-
 								<div class="nowrap ml-1">
 									{selectedRunner.firstName?.at(0)}.{selectedRunner.lastName}
 
@@ -164,10 +167,10 @@
 							{:else}
 								<span class="nowrap my2">Select runner</span>
 							{/if}
+						</div>
 
-							<i class="i-carbon-chevron-down block h4 w4 ml-auto" />
-						</a>
-					</div>
+						<i i-carbon-chevron-down block h4 w4 />
+					</a>
 				</td>
 
 				{#if selectedRunner !== undefined}
@@ -226,7 +229,7 @@
 	.sticky-left,
 	.sticky-bottom {
 		position: sticky;
-		background-color: var(--background-color);
+		background-color: var(--pico-background-color);
 	}
 
 	.z-index-1 {
@@ -239,7 +242,7 @@
 
 	.sticky-left {
 		left: 0;
-		border-right: 0.1875rem solid var(--table-border-color);
+		border-right: 0.1875rem solid var(--pico-table-border-color);
 	}
 
 	.sticky-bottom {
@@ -260,10 +263,10 @@
 	}
 
 	.selected-runner-td {
-		border-top: 0.1875rem solid var(--table-border-color);
+		border-top: 0.1875rem solid var(--pico-table-border-color);
 	}
 
 	.thick-border-top {
-		border-top: 0.1875rem solid var(--table-border-color);
+		border-top: 0.1875rem solid var(--pico-table-border-color);
 	}
 </style>

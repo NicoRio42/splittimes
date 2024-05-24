@@ -21,7 +21,7 @@
 		</p>
 	{/if}
 
-	<details role="list" bind:this={detailsElement}>
+	<details role="list" bind:this={detailsElement} class="dropdown">
 		<summary aria-haspopup="listbox" class="mode-select-summary">
 			{#if $page.url.pathname.includes('superman-graph')}
 				Superman graph

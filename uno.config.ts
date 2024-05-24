@@ -1,3 +1,8 @@
-import { defineConfig, presetIcons, presetWind } from 'unocss';
+import { defineConfig, presetIcons, presetUno, presetAttributify } from 'unocss';
+import extractorSvelte from '@unocss/extractor-svelte';
+import presetPico from 'unocss-preset-pico';
 
-export default defineConfig({ presets: [presetIcons(), presetWind()] });
+export default defineConfig({
+	extractors: [extractorSvelte()],
+	presets: [presetAttributify(), presetIcons(), presetUno(), presetPico()]
+});

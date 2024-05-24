@@ -19,7 +19,7 @@
 						(r) =>
 							r.firstName.toLowerCase().includes(trimedLowerCaseFilter) ||
 							r.lastName.toLowerCase().includes(trimedLowerCaseFilter)
-				  );
+					);
 	}
 
 	$: closeUrl = deleteSearchParamsToURL($page.url, 'showRunnerSelect');
@@ -55,7 +55,7 @@
 <style>
 	article {
 		padding: 2rem;
-		height: calc(90vh - var(--spacing) * 2);
+		height: calc(90vh - var(--pico-spacing) * 2);
 	}
 
 	ul li {

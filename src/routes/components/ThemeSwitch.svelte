@@ -29,7 +29,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.3125rem;
-		border: 0.125rem solid var(--table-border-color);
+		border: 0.125rem solid var(--pico-table-border-color);
 		padding: 0.3125rem;
 		border-radius: 99rem;
 	}
