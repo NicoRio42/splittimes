@@ -129,7 +129,7 @@
 			{/each}
 
 			<tr class="relative">
-				<td class="sticky-left sticky-bottom selected-runner-td" z-1 px-1>
+				<td class="sticky-left sticky-bottom selected-runner-td z-index-1" px-1>
 					<a
 						href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
 						role="button"
