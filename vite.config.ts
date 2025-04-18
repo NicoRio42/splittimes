@@ -3,6 +3,5 @@ import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [sveltekit(), UnoCSS()],
-	optimizeDeps: { exclude: ['orienteering-js'] }
+	plugins: [sveltekit(), UnoCSS()]
 });

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { addSearchParamsToURL, secondsToPrettyTime } from '$lib/utils.js';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
@@ -8,16 +10,16 @@
 	import { goto } from '$app/navigation';
 	import LegCell from '../components/LegCell.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	let runners: Runner[] = data.runners;
 	let legs: (RunnerLeg | null)[] = data.runners[0].legs;
-	let compact = false;
-	let selectedRunner: Runner | undefined;
+	let compact = $state(false);
+	let selectedRunner: Runner | undefined = $state();
 
-	$: showRunnerSelect = $page.url.searchParams.get('showRunnerSelect') !== null;
+	let showRunnerSelect = $derived($page.url.searchParams.get('showRunnerSelect') !== null);
 
-	$: {
+	run(() => {
 		selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
 
 		if (selectedRunner !== undefined && 'localStorage' in globalThis) {
@@ -28,7 +30,7 @@
 					.toLowerCase()}`
 			);
 		}
-	}
+	});
 
 	onMount(() => {
 		if (selectedRunner !== undefined) return;
@@ -169,7 +171,7 @@
 							{/if}
 						</div>
 
-						<i i-carbon-chevron-down block h4 w4 />
+						<i i-carbon-chevron-down block h4 w4></i>
 					</a>
 				</td>
 
@@ -201,13 +203,13 @@
 	}
 
 	table {
-		font-size: 1rem;
+		font-size: 0.875rem;
+		margin: 0;
+		border-collapse: initial;
 	}
 
-	@media (max-width: 768px) {
-		table {
-			font-size: 0.875rem;
-		}
+	table :global(td) {
+		padding: calc(var(--pico-spacing) / 2);
 	}
 
 	.center {
@@ -255,11 +257,6 @@
 
 	.compact-toggle {
 		z-index: 2;
-	}
-
-	table {
-		margin: 0;
-		border-collapse: initial;
 	}
 
 	.selected-runner-td {

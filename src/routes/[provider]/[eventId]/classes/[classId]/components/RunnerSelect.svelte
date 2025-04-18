@@ -1,15 +1,21 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import { deleteSearchParamsToURL } from '$lib/utils.js';
 	import type { Runner } from 'orienteering-js/models';
 	import { slide } from 'svelte/transition';
 
-	export let runners: Runner[];
+	interface Props {
+		runners: Runner[];
+	}
 
-	let filter = '';
-	let filteredRunner: Runner[];
+	let { runners }: Props = $props();
 
-	$: {
+	let filter = $state('');
+	let filteredRunner: Runner[] = $state();
+
+	run(() => {
 		const trimedLowerCaseFilter = filter.trim().toLowerCase();
 
 		filteredRunner =
@@ -20,9 +26,9 @@
 							r.firstName.toLowerCase().includes(trimedLowerCaseFilter) ||
 							r.lastName.toLowerCase().includes(trimedLowerCaseFilter)
 					);
-	}
+	});
 
-	$: closeUrl = deleteSearchParamsToURL($page.url, 'showRunnerSelect');
+	let closeUrl = $derived(deleteSearchParamsToURL($page.url, 'showRunnerSelect'));
 </script>
 
 <dialog open>
@@ -32,7 +38,7 @@
 			aria-label="Close"
 			class="close absolute top-10 right-4 m-0"
 			data-sveltekit-replacestate
-		/>
+		></a>
 
 		<label>
 			Runner Name

@@ -6,8 +6,22 @@
 	import 'uno.css';
 	// Prevent css import reordering
 
-	import ThemeSwitch from './components/ThemeSwitch.svelte';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
+
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
+
+	let tooFast = $state(false);
+
+	$effect(() => {
+		if (navigating.from !== null) {
+			tooFast = true;
+			setTimeout(() => (tooFast = false), 250);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -15,8 +29,8 @@
 </svelte:head>
 
 <div class="wrapper">
-	{#if $navigating !== null}
-		<progress />
+	{#if navigating.from !== null && !tooFast}
+		<progress></progress>
 	{/if}
 
 	<nav class="container-fluid nav" items-center border-b="2 solid pico-table-border-color">
@@ -31,11 +45,9 @@
 				<strong> <a href="/">Splittimes</a> </strong>
 			</li>
 		</ul>
-
-		<ThemeSwitch />
 	</nav>
 
-	<slot />
+	{@render children?.()}
 </div>
 
 <style>

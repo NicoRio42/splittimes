@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { Event } from '$lib/models/event.model.js';
 
-	export let data;
+	let { data } = $props();
 
-	let events: Event[] = data.events;
-	let filteredEvents: Event[] = [...data.events];
-	let filter = '';
+	let events: Event[] = $state($state.snapshot(data.events));
+	let filteredEvents: Event[] = $state($state.snapshot(data.events));
+	let filter = $state('');
+	let form: HTMLFormElement | undefined = $state();
 
 	function handleFilter() {
 		const lowercaseFilter = filter.toLowerCase();
@@ -21,18 +22,24 @@
 </script>
 
 <main class="container">
-	<form class="form">
+	<form class="form" bind:this={form}>
 		<label>
 			Date
 
-			<input class="date" type="date" name="date" value={data.date} onchange="this.form.submit()" />
+			<input
+				class="date"
+				type="date"
+				name="date"
+				value={data.date}
+				onchange={() => form?.submit()}
+			/>
 		</label>
 	</form>
 
 	<label class="search">
 		Search
 
-		<input name="search" bind:value={filter} on:input={handleFilter} />
+		<input name="search" bind:value={filter} oninput={handleFilter} />
 	</label>
 
 	<figure>

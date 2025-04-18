@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { secondsToPrettyTime } from '$lib/utils.js';
 
-	export let time: number;
-	export let rank: number | undefined;
-	export let isLastSplit = false;
+	interface Props {
+		time: number;
+		rank: number | undefined;
+		isLastSplit?: boolean;
+	}
+
+	let { time, rank, isLastSplit = false }: Props = $props();
 
 	function getTextColor(rank: number) {
 		if (rank === 1 && isLastSplit) return 'text-green';

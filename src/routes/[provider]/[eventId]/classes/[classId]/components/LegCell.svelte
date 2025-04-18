@@ -3,9 +3,13 @@
 	import { secondsToPrettyTime } from '$lib/utils.js';
 	import TimeRank from './TimeRank.svelte';
 
-	export let runnerLeg: RunnerLeg | null;
-	export let stickyBottom = false;
-	export let isLastSplit = false;
+	interface Props {
+		runnerLeg: RunnerLeg | null;
+		stickyBottom?: boolean;
+		isLastSplit?: boolean;
+	}
+
+	let { runnerLeg, stickyBottom = false, isLastSplit = false }: Props = $props();
 
 	function computeMistakeOpacity() {
 		if (runnerLeg === null || runnerLeg.timeLoss === 0) return '0%';

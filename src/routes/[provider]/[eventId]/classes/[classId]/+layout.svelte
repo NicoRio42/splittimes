@@ -2,10 +2,10 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	export let data;
+	let { data, children } = $props();
 
 	const baseUrl = `/${$page.params.provider}/${$page.params.eventId}/classes/${$page.params.classId}`;
-	let detailsElement: HTMLDetailsElement;
+	let detailsElement: HTMLDetailsElement = $state();
 
 	afterNavigate(() => detailsElement?.removeAttribute('open'));
 </script>
@@ -50,7 +50,7 @@
 	</details>
 </div>
 
-<slot />
+{@render children?.()}
 
 <style>
 	.event-link {

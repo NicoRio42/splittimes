@@ -1,12 +1,16 @@
 <script lang="ts">
-	export let compact: boolean;
+	interface Props {
+		compact: boolean;
+	}
+
+	let { compact = $bindable() }: Props = $props();
 </script>
 
 <button
 	type="button"
 	class="compact-button"
 	text-pico-h1-color
-	on:click={() => (compact = !compact)}
+	onclick={() => (compact = !compact)}
 >
 	{#if compact}
 		<svg class="enlarge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"

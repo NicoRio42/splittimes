@@ -5,28 +5,36 @@
 	import { clickOutside } from '$lib/actions/click-outside.js';
 	import { addAlpha, secondsToPrettyTime } from '$lib/utils.js';
 
-	export let runners: Runner[];
-	export let supermanOrLeader: number[];
-	export let runnerLegKey: 'timeBehindSuperman' | 'timeBehindOverall';
+	interface Props {
+		runners: Runner[];
+		supermanOrLeader: number[];
+		runnerLegKey: 'timeBehindSuperman' | 'timeBehindOverall';
+	}
 
-	let validRunners = runners.filter((r) => r.status === RunnerStatusEnum.OK);
-	let selectedRunners = validRunners.slice(0, 6);
-	let hoveredLegIndex = 1;
-	let compact = false;
+	let { runners, supermanOrLeader, runnerLegKey }: Props = $props();
+
+	let validRunnersIds = $state(runners.filter((r) => r.status === 'ok').map((r) => r.id));
+	let validRunners = $derived(runners.filter((r) => validRunnersIds.includes(r.id)));
+	let selectedRunnersIds = $state(validRunnersIds.slice(0, 6));
+	let selectedRunners = $derived(runners.filter((r) => selectedRunnersIds.includes(r.id)));
+	let hoveredLegIndex = $state(1);
+	let compact = $state(false);
 	const maxX = supermanOrLeader.at(-1)!;
-	let displayPanel = false;
+	let displayPanel = $state(false);
 
-	$: areAllRunnersSelected = selectedRunners.length === validRunners.length;
-	$: maxY =
+	let areAllRunnersSelected = $derived(selectedRunners.length === validRunners.length);
+
+	let maxY = $derived(
 		selectedRunners.length === 0
 			? 0
 			: Math.max(
 					...selectedRunners.flatMap((r) => r.legs.map((l) => (l === null ? 0 : l[runnerLegKey])))
-				);
+				)
+	);
 </script>
 
 <svelte:window
-	on:keydown={(e) => {
+	onkeydown={(e: KeyboardEvent) => {
 		if (e.key === 'Escape') displayPanel = false;
 	}}
 />
@@ -38,7 +46,10 @@
 				<input
 					type="checkbox"
 					checked={areAllRunnersSelected}
-					on:change={(e) => (selectedRunners = e.currentTarget.checked ? validRunners : [])}
+					onchange={(e: Event) =>
+						(selectedRunnersIds = (e.currentTarget as HTMLInputElement)?.checked
+							? validRunnersIds
+							: [])}
 				/>
 			</small>
 
@@ -50,8 +61,8 @@
 				<small>
 					<input
 						type="checkbox"
-						value={runner}
-						bind:group={selectedRunners}
+						value={runner.id}
+						bind:group={selectedRunnersIds}
 						style:--pico-border-color={runner.track?.color}
 						style:--pico-primary-background={runner.track?.color}
 						style:--pico-form-element-focus-color={addAlpha(runner.track?.color ?? '#FFFFFF', 0.13)}
@@ -67,11 +78,13 @@
 		{/each}
 	</form>
 
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="svg-wrapper"
-		on:click={(e) => {
+		onclick={(e: MouseEvent) => {
+			if (!(e.currentTarget instanceof HTMLDivElement)) return;
+
 			const x = (e.offsetX * maxX) / e.currentTarget.clientWidth;
 			const newHoveredLegIndex = supermanOrLeader.findIndex((l) => x < l);
 
@@ -127,7 +140,7 @@
 				return leg1[key] - leg2[key];
 			})}
 
-			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<article
 				class="leg-panel"
 				style:left={hoveredLegIndex < supermanOrLeader.length / 2
@@ -136,7 +149,7 @@
 				style:right={hoveredLegIndex >= supermanOrLeader.length / 2
 					? (1 - supermanOrLeader[hoveredLegIndex - 1] / maxX) * 100 + '%'
 					: 'unset'}
-				on:click|stopPropagation
+				onclick={(e: MouseEvent) => e.stopPropagation()}
 			>
 				<p class="leg-panel-head" bg-pico-card-background-color>
 					Leg: {hoveredLegIndex + 1}
@@ -145,7 +158,7 @@
 						type="button"
 						class="raw-btn close-button"
 						text-pico-h1-color
-						on:click={() => (displayPanel = false)}
+						onclick={() => (displayPanel = false)}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
 							><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path

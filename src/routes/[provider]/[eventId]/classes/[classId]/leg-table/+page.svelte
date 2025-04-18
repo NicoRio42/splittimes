@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { addSearchParamsToURL, secondsToPrettyTime } from '$lib/utils.js';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
@@ -8,32 +10,12 @@
 	import { goto } from '$app/navigation';
 	import LegCell from '../components/LegCell.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	let runners: Runner[] = data.runners;
-	let selectedRunner: Runner | undefined;
+	let selectedRunner: Runner | undefined = $state();
 
-	$: showRunnerSelect = $page.url.searchParams.get('showRunnerSelect') !== null;
-	$: legNumber = getLegNumber($page.url.searchParams.get('legNumber'));
 
-	$: sortedRunners = runners.sort((runner1, runner2) => {
-		const runner1Leg = runner1.legs[legNumber - 1];
-		const runner2Leg = runner2.legs[legNumber - 1];
-
-		if (runner1Leg !== null && runner2Leg !== null) {
-			return runner1Leg.time - runner2Leg.time;
-		}
-
-		if (runner1Leg === null && runner2Leg !== null) {
-			return 1;
-		}
-
-		if (runner1Leg !== null && runner2Leg === null) {
-			return -1;
-		}
-
-		return 0;
-	});
 
 	function getLegNumber(legNumberSearchParams: string | null) {
 		if (legNumberSearchParams === null) return 1;
@@ -43,18 +25,6 @@
 		return parsedNumber;
 	}
 
-	$: {
-		selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
-
-		if (selectedRunner !== undefined && 'localStorage' in globalThis) {
-			localStorage.setItem(
-				'selectedRunner',
-				`${selectedRunner.firstName.trim().toLowerCase()}-${selectedRunner.lastName
-					.trim()
-					.toLowerCase()}`
-			);
-		}
-	}
 
 	onMount(() => {
 		if (selectedRunner !== undefined) return;
@@ -73,6 +43,38 @@
 		if (correspondingRunner === undefined) return;
 
 		goto(`?selectedRunner=${correspondingRunner.id}`);
+	});
+	let showRunnerSelect = $derived($page.url.searchParams.get('showRunnerSelect') !== null);
+	let legNumber = $derived(getLegNumber($page.url.searchParams.get('legNumber')));
+	let sortedRunners = $derived(runners.sort((runner1, runner2) => {
+		const runner1Leg = runner1.legs[legNumber - 1];
+		const runner2Leg = runner2.legs[legNumber - 1];
+
+		if (runner1Leg !== null && runner2Leg !== null) {
+			return runner1Leg.time - runner2Leg.time;
+		}
+
+		if (runner1Leg === null && runner2Leg !== null) {
+			return 1;
+		}
+
+		if (runner1Leg !== null && runner2Leg === null) {
+			return -1;
+		}
+
+		return 0;
+	}));
+	run(() => {
+		selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
+
+		if (selectedRunner !== undefined && 'localStorage' in globalThis) {
+			localStorage.setItem(
+				'selectedRunner',
+				`${selectedRunner.firstName.trim().toLowerCase()}-${selectedRunner.lastName
+					.trim()
+					.toLowerCase()}`
+			);
+		}
 	});
 </script>
 
@@ -176,7 +178,7 @@
 
 	<select
 		value={legNumber}
-		on:change={(e) =>
+		onchange={(e) =>
 			goto(addSearchParamsToURL($page.url, 'legNumber', String(e.currentTarget.value)))}
 	>
 		{#each runners[0].legs as leg, index}

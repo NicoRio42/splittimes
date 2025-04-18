@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Graph from '../components/Graph.svelte';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <Graph

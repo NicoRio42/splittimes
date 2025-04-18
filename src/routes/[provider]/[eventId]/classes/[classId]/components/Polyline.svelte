@@ -1,6 +1,10 @@
 <script lang="ts">
-	export let points: number[][];
-	export let color: string;
+	interface Props {
+		points: number[][];
+		color: string;
+	}
+
+	let { points, color }: Props = $props();
 </script>
 
 <polyline fill="none" stroke={color} points={points.map(([x, y]) => `${x},${y}`).join(' ')} />
