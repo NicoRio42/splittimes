@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { addSearchParamsToURL, secondsToPrettyTime } from '$lib/utils.js';
 	import type { Runner, RunnerLeg } from 'orienteering-js/models';
 	import EnlargeToggle from '$lib/components/EnlargeToggle.svelte';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import RunnerSelect from '../components/RunnerSelect.svelte';
 	import { goto } from '$app/navigation';
 	import LegCell from '../components/LegCell.svelte';
+	import { page } from '$app/state';
 
 	let { data } = $props();
 
@@ -17,10 +15,10 @@
 	let compact = $state(false);
 	let selectedRunner: Runner | undefined = $state();
 
-	let showRunnerSelect = $derived($page.url.searchParams.get('showRunnerSelect') !== null);
+	let showRunnerSelect = $derived(page.url.searchParams.get('showRunnerSelect') !== null);
 
-	run(() => {
-		selectedRunner = runners.find((r) => r.id === $page.url.searchParams.get('selectedRunner'));
+	$effect(() => {
+		selectedRunner = runners.find((r) => r.id === page.url.searchParams.get('selectedRunner'));
 
 		if (selectedRunner !== undefined && 'localStorage' in globalThis) {
 			localStorage.setItem(
@@ -67,7 +65,7 @@
 				{#each legs as _, index}
 					<th class="sticky-top center z-index-1">
 						<a
-							href="/{$page.params.provider}/{$page.params.eventId}/classes/{$page.params
+							href="/{page.params.provider}/{page.params.eventId}/classes/{page.params
 								.classId}/leg-table?legNumber={index + 1}{selectedRunner !== undefined
 								? `&selectedRunner=${selectedRunner.id}`
 								: ''}"
@@ -133,7 +131,7 @@
 			<tr class="relative">
 				<td class="sticky-left sticky-bottom selected-runner-td z-index-1" px-1>
 					<a
-						href={addSearchParamsToURL($page.url, 'showRunnerSelect', 'true')}
+						href={addSearchParamsToURL(page.url, 'showRunnerSelect', 'true')}
 						role="button"
 						class="outline !flex !w-full"
 						items-center
